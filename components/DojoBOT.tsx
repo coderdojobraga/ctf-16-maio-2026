@@ -140,18 +140,18 @@ function VictoryScreen() {
         className="relative z-10 text-center space-y-6 bg-white border border-purple-200 rounded-2xl p-10 max-w-md shadow-2xl"
       >
         <CheckCircle2 className="w-16 h-16 text-purple-600 mx-auto" />
-        <h1 className="text-3xl font-bold text-gray-900">Missão Concluída!</h1>
-        <p className="text-gray-600">Completaste o <strong>CoderDojo Cyber Challenge</strong>!</p>
+        <h1 className="text-3xl font-bold text-gray-900">Parabéns!</h1>
+        <p className="text-gray-600">Exploraste o <strong>CoderDojo Braga</strong> de ponta a ponta.</p>
         <div className="space-y-2 text-sm text-gray-500 text-left">
-          <p>✅ Nível 1: Autenticação simulada</p>
-          <p>✅ Nível 2: Manipulação de URL</p>
-          <p>✅ Nível 3: OSINT & Cifra de César</p>
-          <p>✅ Nível 4: Anti-Phishing</p>
-          <p>✅ Nível 5: Escalada de Acesso</p>
-          <p>✅ Nível 6: Engenharia Social com LLM</p>
+          <p>✅ Criaste uma conta no portal</p>
+          <p>✅ Descobriste um directório oculto</p>
+          <p>✅ Descifraste metadados de uma imagem</p>
+          <p>✅ Identificaste emails de phishing</p>
+          <p>✅ Elevaste as tuas permissões de acesso</p>
+          <p>✅ Extraíste informação de um assistente de IA</p>
         </div>
         <p className="text-purple-700 font-semibold text-sm">
-          Bem-vindo ao mundo da Cibersegurança! 🔐
+          Bem-vindo ao mundo da Cibersegurança!
         </p>
       </motion.div>
     </div>

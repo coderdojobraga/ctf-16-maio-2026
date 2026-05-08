@@ -39,8 +39,7 @@ export default function LoginTab() {
     game.setCredentials({ user: regUser, email: regEmail, pass: regPass });
     game.setLevel(2);
     game.unlockTab('blog');
-    toast('success', `Bem-vindo, ${regUser}!`, 'Conta criada. Nível 2 desbloqueado.');
-    toast('unlock', 'Nova aba: Blog', 'Explora o blog para encontrar o próximo passo.');
+    toast('success', `Bem-vindo, ${regUser}!`, 'A tua conta foi criada com sucesso.');
   }
 
   return (

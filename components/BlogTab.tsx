@@ -10,7 +10,7 @@ export default function BlogTab() {
       <header className="border-b border-gray-200 pb-4">
         <p className="text-xs text-purple-600 font-mono mb-2">dojo.local/blog</p>
         <h1 className="text-2xl font-bold text-gray-900">Guia dos Diretórios Web</h1>
-        <p className="text-sm text-gray-400 mt-1">Publicado por mentor_dojo · Nível 2</p>
+        <p className="text-sm text-gray-400 mt-1">Publicado por mentor_dojo · 12 Abr 2026</p>
       </header>
 
       <p>
@@ -76,10 +76,11 @@ export default function BlogTab() {
       </div>
 
       <div className="bg-purple-50 border border-purple-200 rounded-xl p-4 space-y-2">
-        <p className="text-purple-700 font-semibold text-sm">Missão do Nível 2</p>
+        <p className="text-purple-700 font-semibold text-sm">Sabia que?</p>
         <p className="text-gray-600 text-sm">
-          Usa as pistas acima e navega para o directório secreto modificando o URL
-          directamente na <strong className="text-gray-900">barra de endereço do teu browser</strong>.
+          Muitas páginas internas ficam acessíveis apenas por quem conhece o caminho certo.
+          Tenta navegar directamente para um directório do site modificando o URL
+          na <strong className="text-gray-900">barra de endereço do browser</strong>.
         </p>
         <p className="text-gray-400 text-xs font-mono">
           exemplo: …/dashboard/<span className="text-purple-600">???</span>

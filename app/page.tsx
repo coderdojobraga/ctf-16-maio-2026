@@ -20,10 +20,7 @@ export default function LandingPage() {
       {/* Nav */}
       <nav className="flex items-center justify-between px-8 py-4 border-b border-gray-100">
         <div className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-full bg-gray-900 flex items-center justify-center">
-            <span className="text-white text-xs font-bold">CD</span>
-          </div>
-          <span className="font-bold text-gray-900">CoderDojo <span className="text-gray-500 font-normal">Braga</span></span>
+          <img src="/DojoLogo.svg" alt="CoderDojo Braga" className="h-9 w-auto" />
         </div>
         <div className="flex items-center gap-6 text-sm text-gray-600">
           <span className="hidden sm:block">Cyber Challenge</span>
