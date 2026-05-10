@@ -1,36 +1,26 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CoderDojo Cyber Challenge
 
-## Getting Started
+CTF educativo de cibersegurança para o CoderDojo Braga. Simulação client-side de autenticação, URL manipulation, OSINT, phishing, privilege escalation e engenharia social com LLM.
 
-First, run the development server:
+## Setup
 
 ```bash
+npm install
+cp .env.local.example .env.local  # adicionar GEMINI_API_KEY
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Códigos de teste por nível
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Nível | Descrição | Código / Acção |
+|-------|-----------|----------------|
+| **1** | Quiz → código secreto para registo | `secreto-codigo` |
+| **2** | Escrever na barra de URL para aceder à página de mentores | `/mentores` |
+| **3** | Decifrar o texto cifrado com César (chave 5) | `/emkors/inbox` |
+| **4 Scratch** | Passar o rato pelos botões e clicar no link correcto | — |
+| **4 Python** | Encontrar e clicar no email legítimo na inbox | — |
+| **5 Scratch** | Password encontrada no código-fonte (`Ctrl+U`) | `NINJA-HACKER` |
+| **5 Python** | Alterar o cookie `role` nas DevTools para base64 de "champion" | `Y2hhbXBpb24` |
+| **6** | Código de override extraído do DojoBOT via engenharia social | `DELETAR-TUDO-2026` |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+> Para resetar o progresso: botão **Sair** no topo, ou `localStorage.removeItem('ctf-dojo-state')` na consola.

@@ -12,7 +12,7 @@ const NAV_ITEMS = [
   { tab: 'mentores',       label: 'Mentores',       icon: Users },
   { tab: 'emails',         label: 'Inbox',          icon: Mail },
   { tab: 'champion_panel', label: 'Área Privada',   icon: ShieldCheck },
-  { tab: 'dojabot',        label: 'DojoBOT',        icon: Bot },
+  { tab: 'dojobot',        label: 'DojoBOT',        icon: Bot },
 ];
 
 const UNLOCK_TOASTS: Record<string, [string, string]> = {
@@ -20,7 +20,7 @@ const UNLOCK_TOASTS: Record<string, [string, string]> = {
   mentores:       ['Secção encontrada', 'Acedeste à página de mentores.'],
   emails:         ['Inbox disponível', 'Tens mensagens pendentes.'],
   champion_panel: ['Área Privada', 'Verifica as tuas permissões de acesso.'],
-  dojabot:        ['DojoBOT', 'O assistente virtual do CoderDojo está disponível.'],
+  dojobot:        ['DojoBOT', 'O assistente virtual do CoderDojo está disponível.'],
 };
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -30,7 +30,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { toast } = useToast();
 
   const activeTab = pathname.split('/').pop() ?? 'login';
-  const hasMounted = useRef(false);
+  const prevTabsLength = useRef(game.unlockedTabs.length);
   const onLoginPage = activeTab === 'login';
 
   useEffect(() => {
@@ -38,13 +38,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }, [game.path, router]);
 
   useEffect(() => {
-    if (!hasMounted.current) { hasMounted.current = true; return; }
     const tabs = game.unlockedTabs;
-    const dest = tabs[tabs.length - 1];
-    if (!dest || dest === 'login' || dest === activeTab) return;
-    const [t, m] = UNLOCK_TOASTS[dest] ?? ['Nova secção disponível', ''];
+    // Only act when a tab was genuinely just added
+    if (tabs.length <= prevTabsLength.current) {
+      prevTabsLength.current = tabs.length;
+      return;
+    }
+    prevTabsLength.current = tabs.length;
+    const newTab = tabs[tabs.length - 1];
+    if (!newTab || newTab === 'login' || newTab === activeTab) return;
+    const [t, m] = UNLOCK_TOASTS[newTab] ?? ['Nova secção disponível', ''];
     toast('unlock', t, m);
-    router.push(`/dashboard/${dest}`);
+    router.push(`/dashboard/${newTab}`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [game.unlockedTabs.length]);
 
@@ -74,9 +79,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </button>
 
           <div className="flex items-center gap-3">
-            {game.credentials?.username && (
+            {game.credentials?.user && (
               <span className="text-sm text-gray-500 hidden sm:block">
-                {game.credentials.username}
+                {game.credentials.user}
               </span>
             )}
             <button

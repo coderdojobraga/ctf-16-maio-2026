@@ -3,9 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useGame } from '@/context/GameContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Lock, Unlock, Wrench } from 'lucide-react';
+import { Lock, Unlock, Wrench, Trophy } from 'lucide-react';
 import FakeDevTools from './FakeDevTools';
-import UnlockedChampion from './UnlockedChampion';
 
 const SCRATCH_PASSWORD = 'NINJA-HACKER';
 const CHAMPION_COOKIE = 'Y2hhbXBpb24';
@@ -20,15 +19,25 @@ export default function ChampionPanel() {
   useEffect(() => {
     if (game.path === 'python' && cookieIsChampion && game.currentLevel < 6) {
       game.setLevel(6);
-      game.unlockTab('dojabot');
+      game.unlockTab('dojobot');
     }
   }, [cookieIsChampion, game.path, game.currentLevel]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (game.currentLevel >= 6) return <UnlockedChampion />;
+  if (game.currentLevel >= 6) return (
+    <div className="flex flex-col items-center justify-center min-h-full p-8">
+      <div className="bg-white border border-gray-200 rounded-2xl p-10 max-w-sm w-full text-center shadow-sm space-y-4">
+        <div className="w-14 h-14 bg-yellow-50 rounded-full flex items-center justify-center mx-auto">
+          <Trophy className="w-7 h-7 text-yellow-500" />
+        </div>
+        <h1 className="text-xl font-bold text-gray-900">Acesso Champion desbloqueado!</h1>
+        <p className="text-gray-500 text-sm">Conseguiste elevar as tuas permissões. O painel secreto foi ativado.</p>
+      </div>
+    </div>
+  );
 
   function tryPass(e: React.FormEvent) {
     e.preventDefault();
-    if (pass === SCRATCH_PASSWORD) { game.setLevel(6); game.unlockTab('dojabot'); }
+    if (pass === SCRATCH_PASSWORD) { game.setLevel(6); game.unlockTab('dojobot'); }
     else setError('Senha incorrecta. Tenta de novo.');
   }
 

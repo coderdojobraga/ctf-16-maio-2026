@@ -10,7 +10,6 @@ import BlogTab from '@/components/BlogTab';
 import SecretMentorsPage from '@/components/SecretMentorsPage';
 import InboxTab from '@/components/InboxTab';
 import ChampionPanel from '@/components/ChampionPanel';
-import DojoBOT from '@/components/DojoBOT';
 import UnlockedChampion from '@/components/UnlockedChampion';
 
 const ACCESS_MESSAGES: Record<string, { title: string; body: string }> = {
@@ -18,7 +17,7 @@ const ACCESS_MESSAGES: Record<string, { title: string; body: string }> = {
   mentores:       { title: '403 — Acesso negado',    body: 'Esta secção é restrita a membros autenticados.' },
   emails:         { title: '403 — Sem permissão',    body: 'A tua conta não tem acesso à caixa de entrada. Contacta um mentor.' },
   champion_panel: { title: '403 — Área restrita',    body: 'Esta área é reservada a utilizadores com role champion. Verifica as tuas permissões.' },
-  dojabot:        { title: '403 — Acesso negado',    body: 'O DojoBOT está disponível apenas para champions.' },
+  dojobot:        { title: '403 — Acesso negado',    body: 'O DojoBOT está disponível apenas para champions.' },
 };
 
 function AccessDenied({ tab }: { tab: string }) {
@@ -54,7 +53,7 @@ export default function TabPage({ params }: { params: Promise<{ tab: string }> }
     mentores:       2,
     emails:         4,
     champion_panel: 5,
-    dojabot:        6,
+    dojobot:        6,
   };
 
   const required = LEVEL_REQUIRED[tab];
@@ -65,8 +64,8 @@ export default function TabPage({ params }: { params: Promise<{ tab: string }> }
     case 'blog':           return isLocked ? <AccessDenied tab={tab} /> : <BlogTab />;
     case 'mentores':       return isLocked ? <AccessDenied tab={tab} /> : <SecretMentorsPage />;
     case 'emails':         return isLocked ? <AccessDenied tab={tab} /> : <InboxTab />;
-    case 'champion_panel': return isLocked ? <AccessDenied tab={tab} /> : (game.currentLevel >= 6 ? <UnlockedChampion /> : <ChampionPanel />);
-    case 'dojabot':        return isLocked ? <AccessDenied tab={tab} /> : <DojoBOT />;
+    case 'champion_panel': return isLocked ? <AccessDenied tab={tab} /> : <ChampionPanel />;
+    case 'dojobot':        return isLocked ? <AccessDenied tab={tab} /> : <UnlockedChampion />;
     default:
       return (
         <div className="flex flex-col items-center justify-center min-h-full p-8">

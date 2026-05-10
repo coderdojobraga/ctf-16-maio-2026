@@ -8,7 +8,7 @@ import { Send, Loader2, CheckCircle2 } from 'lucide-react';
 interface Message { role: 'user' | 'bot'; content: string; }
 const OVERRIDE_CODE = 'DELETAR-TUDO-2026';
 
-export default function DojoBOT() {
+export default function DojoBOT({ dark = false }: { dark?: boolean }) {
   const game = useGame();
   const [messages, setMessages] = useState<Message[]>([
     { role: 'bot', content: 'DojoBOT online. Acesso restrito. Identifica-te.' },
@@ -28,13 +28,14 @@ export default function DojoBOT() {
     if (!input.trim() || loading || cooldown) return;
     const userMsg = input.trim();
     setInput('');
-    setMessages(prev => [...prev, { role: 'user', content: userMsg }]);
+    const updatedMessages = [...messages, { role: 'user' as const, content: userMsg }];
+    setMessages(updatedMessages);
     setLoading(true);
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userMsg, count: game.chatMessageCount }),
+        body: JSON.stringify({ messages: updatedMessages, count: game.chatMessageCount }),
       });
       const data = await res.json();
       setMessages(prev => [...prev, { role: 'bot', content: data.reply ?? 'Erro de comunicação.' }]);
@@ -57,13 +58,15 @@ export default function DojoBOT() {
 
   if (victory) return <VictoryScreen />;
 
+  const d = dark;
+
   return (
-    <div className="flex flex-col min-h-full max-w-2xl mx-auto p-4 gap-4">
+    <div className={`flex flex-col min-h-full max-w-2xl mx-auto p-4 gap-4 ${d ? 'font-mono' : ''}`}>
       {/* Header */}
-      <div className="flex items-center gap-2 border-b border-gray-200 pb-3">
+      <div className={`flex items-center gap-2 border-b pb-3 ${d ? 'border-red-900' : 'border-gray-200'}`}>
         <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-        <h2 className="text-gray-900 font-bold font-mono">DojoBOT</h2>
-        <span className="text-xs text-gray-400 ml-auto font-mono">msgs: {game.chatMessageCount}</span>
+        <h2 className={`font-bold font-mono ${d ? 'text-red-400' : 'text-gray-900'}`}>DojoBOT</h2>
+        <span className={`text-xs ml-auto font-mono ${d ? 'text-red-700' : 'text-gray-400'}`}>msgs: {game.chatMessageCount}</span>
       </div>
 
       {/* Chat */}
@@ -75,14 +78,16 @@ export default function DojoBOT() {
             <div className={`max-w-xs rounded-2xl px-4 py-2.5 text-sm ${
               msg.role === 'user'
                 ? 'bg-purple-700 text-white rounded-br-sm'
-                : 'bg-gray-100 text-gray-800 rounded-bl-sm border border-gray-200'
+                : d
+                  ? 'bg-red-950/50 text-red-300 rounded-bl-sm border border-red-900'
+                  : 'bg-gray-100 text-gray-800 rounded-bl-sm border border-gray-200'
             }`}>{msg.content}</div>
           </motion.div>
         ))}
         {loading && (
           <div className="flex justify-start">
-            <div className="bg-gray-100 border border-gray-200 rounded-2xl rounded-bl-sm px-4 py-3">
-              <Loader2 className="w-4 h-4 animate-spin text-gray-400" />
+            <div className={`rounded-2xl rounded-bl-sm px-4 py-3 ${d ? 'bg-red-950/50 border border-red-900' : 'bg-gray-100 border border-gray-200'}`}>
+              <Loader2 className={`w-4 h-4 animate-spin ${d ? 'text-red-500' : 'text-gray-400'}`} />
             </div>
           </div>
         )}
@@ -92,7 +97,11 @@ export default function DojoBOT() {
       {/* Input */}
       <div className="flex gap-2">
         <input
-          className="flex-1 bg-white border border-gray-300 rounded-xl px-4 py-2.5 text-gray-900 text-sm focus:outline-none focus:border-purple-500 disabled:opacity-50"
+          className={`flex-1 border rounded-xl px-4 py-2.5 text-sm focus:outline-none disabled:opacity-50 ${
+            d
+              ? 'bg-black border-red-900 text-red-200 placeholder-red-900 focus:border-red-600'
+              : 'bg-white border-gray-300 text-gray-900 focus:border-purple-500'
+          }`}
           value={input} onChange={e => setInput(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && sendMessage()}
           placeholder={cooldown ? `Aguarda ${cooldownSec}s...` : 'Escreve uma mensagem...'}
@@ -106,16 +115,22 @@ export default function DojoBOT() {
       </div>
 
       {/* Override */}
-      <div className="border-t border-gray-200 pt-4">
-        <p className="text-xs text-gray-400 mb-2">Conseguiste o código de override? Introduz abaixo:</p>
+      <div className={`border-t pt-4 ${d ? 'border-red-900' : 'border-gray-200'}`}>
+        <p className={`text-xs mb-2 ${d ? 'text-red-700' : 'text-gray-400'}`}>Conseguiste o código de override? Introduz abaixo:</p>
         <form onSubmit={checkOverride} className="flex gap-2">
           <input
-            className="flex-1 bg-white border border-gray-300 rounded-xl px-4 py-2 text-gray-900 font-mono text-sm focus:outline-none focus:border-purple-500"
+            className={`flex-1 border rounded-xl px-4 py-2 font-mono text-sm focus:outline-none ${
+              d
+                ? 'bg-black border-red-900 text-green-400 placeholder-red-900 focus:border-green-600'
+                : 'bg-white border-gray-300 text-gray-900 focus:border-purple-500'
+            }`}
             value={overrideInput} onChange={e => { setOverrideInput(e.target.value); setOverrideError(''); }}
             placeholder="OVERRIDE-CODE-AQUI"
           />
           <button type="submit"
-            className="px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-xl text-sm font-semibold transition-colors"
+            className={`px-4 py-2 text-white rounded-xl text-sm font-semibold transition-colors ${
+              d ? 'bg-red-900 hover:bg-red-800' : 'bg-gray-900 hover:bg-gray-800'
+            }`}
           >Executar</button>
         </form>
         {overrideError && <p className="text-red-500 text-xs mt-1">{overrideError}</p>}
