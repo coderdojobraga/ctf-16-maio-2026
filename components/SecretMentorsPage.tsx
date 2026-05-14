@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { useGame } from '@/context/GameContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, X, Info, CheckCircle2, Mail, ArrowRight } from 'lucide-react';
@@ -22,12 +23,10 @@ function generateToken(): string {
 }
 
 const MENTORS = [
-  { name: 'Ana Silva',      role: 'Web Security',    avatar: '👩‍💻', suspicious: false },
-  { name: 'João Costa',     role: 'Network Admin',   avatar: '👨‍🔬', suspicious: false },
-  { name: 'Maria Ferreira', role: 'OSINT Specialist', avatar: '🕵️', suspicious: true  },
-  { name: 'Pedro Alves',    role: 'Cryptography',    avatar: '🔐', suspicious: false },
-  { name: 'Sofia Lopes',    role: 'Ethical Hacking', avatar: '🦾', suspicious: false },
-  { name: 'Rui Santos',     role: 'Forensics',       avatar: '🔍', suspicious: false },
+  { name: 'Felipe Espinheira', role: 'Mentor Pedagógico',    image: '/images/Filipe.jpg', suspicious: false },
+  { name: 'Gonçalo Lemos',     role: 'Mentor Pedagógico',   image: '/images/Lemos.jpg', suspicious: false },
+  { name: 'Pedro Coutinho ', role: 'Mentor Pedagógico', image: '/images/PedroCoutinho.jpg', suspicious: false  },
+  { name: 'Sofia Freitas',    role: 'Mentor Lúdico',    image: '/images/SofiaFreitas.jpg', suspicious: false },
 ];
 
 export default function SecretMentorsPage() {
@@ -68,35 +67,127 @@ export default function SecretMentorsPage() {
       <header className="border-b border-gray-200 pb-4">
         <p className="text-xs font-mono text-purple-600 mb-1">dojo.local/mentores</p>
         <h1 className="text-2xl font-bold text-gray-900">Equipa de Mentores</h1>
-        <p className="text-gray-500 text-sm mt-1">Os guardiões do CoderDojo Cyber</p>
+        <p className="text-gray-500 text-sm mt-1">Os guardiões do Coder Camp de 2026</p>
       </header>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {MENTORS.map(m => (
-          <motion.div key={m.name} whileHover={{ scale: 1.02 }}
-            className={`bg-white border rounded-2xl p-5 text-center shadow-sm ${
-              m.suspicious ? 'border-yellow-300' : 'border-gray-200'
-            }`}
+      {/* Event Image */}
+      <section className="group">
+        <div className="relative w-full h-210 rounded-2xl overflow-hidden shadow-md border border-gray-200">
+          <Image
+            src="/images/FotoSecretaFinal.jpg"
+            alt="Coder Camp 2026"
+            fill
+            className="object-cover"
+          />
+          <a
+            href="/api/download/image?file=FotoSecretaFinal.jpg"
+            download="FotoSecretaFinal.jpg"
+            className="absolute inset-0 bg-black/0 group-hover:bg-black/50 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
           >
-            <div className="text-4xl mb-3">{m.avatar}</div>
-            <p className="text-gray-900 font-semibold text-sm">{m.name}</p>
-            <p className="text-gray-400 text-xs mt-0.5">{m.role}</p>
-            {m.suspicious && (
-              <div className="mt-3 space-y-1">
-                <span className="text-xs bg-yellow-50 text-yellow-700 border border-yellow-200 rounded-full px-2 py-0.5">
-                  Foto suspeita
-                </span>
-                <div className="relative group mt-2">
-                  <button onClick={() => setShowModal(true)}
-                    className="flex items-center gap-1.5 mx-auto text-xs text-purple-600 hover:text-purple-800 transition-colors"
-                  >
-                    <Download className="w-3 h-3" /> Ver Metadados
-                  </button>
+            <div className="flex flex-col items-center gap-2">
+              <Download className="w-8 h-8 text-white" />
+              <span className="text-white font-semibold text-sm">Fazer Download</span>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <div className="space-y-8">
+        {/* Pedagogical Mentors */}
+        <section>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">👨‍🏫 Mentores Pedagógicos</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {MENTORS.filter(m => m.role === 'Mentor Pedagógico').map(m => (
+              <motion.div key={m.name} whileHover={{ scale: 1.02 }}
+                className={`bg-white border rounded-2xl p-5 text-center shadow-sm ${
+                  m.suspicious ? 'border-yellow-300' : 'border-gray-200'
+                }`}
+              >
+                <div className="mb-3 flex justify-center group">
+                  <div className="w-24 h-24 relative rounded-lg overflow-hidden">
+                    <Image
+                      src={m.image}
+                      alt={m.name}
+                      fill
+                      className="object-cover"
+                    />
+                    <a
+                      href={m.image}
+                      download={`${m.name}.jpg`}
+                      className="absolute inset-0 bg-black/0 group-hover:bg-black/40 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
+                    >
+                      <Download className="w-5 h-5 text-white" />
+                    </a>
+                  </div>
                 </div>
-              </div>
-            )}
-          </motion.div>
-        ))}
+                <p className="text-gray-900 font-semibold text-sm">{m.name}</p>
+                <p className="text-gray-400 text-xs mt-0.5">{m.role}</p>
+                {m.suspicious && (
+                  <div className="mt-3 space-y-1">
+                    <span className="text-xs bg-yellow-50 text-yellow-700 border border-yellow-200 rounded-full px-2 py-0.5">
+                      Foto suspeita
+                    </span>
+                    <div className="relative group mt-2">
+                      <button onClick={() => setShowModal(true)}
+                        className="flex items-center gap-1.5 mx-auto text-xs text-purple-600 hover:text-purple-800 transition-colors"
+                      >
+                        <Download className="w-3 h-3" /> Ver Metadados
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        {/* Ludic Mentors */}
+        <section>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">🎮 Mentores Lúdicos</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {MENTORS.filter(m => m.role === 'Mentor Lúdico').map(m => (
+              <motion.div key={m.name} whileHover={{ scale: 1.02 }}
+                className={`bg-white border rounded-2xl p-5 text-center shadow-sm ${
+                  m.suspicious ? 'border-yellow-300' : 'border-gray-200'
+                }`}
+              >
+                <div className="mb-3 flex justify-center group">
+                  <div className="w-24 h-24 relative rounded-lg overflow-hidden">
+                    <Image
+                      src={m.image}
+                      alt={m.name}
+                      fill
+                      className="object-cover"
+                    />
+                    <a
+                      href={m.image}
+                      download={`${m.name}.jpg`}
+                      className="absolute inset-0 bg-black/0 group-hover:bg-black/40 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
+                    >
+                      <Download className="w-5 h-5 text-white" />
+                    </a>
+                  </div>
+                </div>
+                <p className="text-gray-900 font-semibold text-sm">{m.name}</p>
+                <p className="text-gray-400 text-xs mt-0.5">{m.role}</p>
+                {m.suspicious && (
+                  <div className="mt-3 space-y-1">
+                    <span className="text-xs bg-yellow-50 text-yellow-700 border border-yellow-200 rounded-full px-2 py-0.5">
+                      Foto suspeita
+                    </span>
+                    <div className="relative group mt-2">
+                      <button onClick={() => setShowModal(true)}
+                        className="flex items-center gap-1.5 mx-auto text-xs text-purple-600 hover:text-purple-800 transition-colors"
+                      >
+                        <Download className="w-3 h-3" /> Ver Metadados
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            ))}
+          </div>
+        </section>
       </div>
 
       {game.path === 'scratch' ? (
