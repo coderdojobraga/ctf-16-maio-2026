@@ -303,7 +303,7 @@ function ChampionDashboard({ onHintRead }: { onHintRead: () => void }) {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-purple-200 text-sm font-mono">dojo.local/champion_panel</p>
-              <h1 className="text-2xl font-bold mt-1">Bem-vindo de volta, {username}!</h1>
+              <h1 className="text-2xl font-bold mt-1">Bem-vindo de volta, Champion {username}!</h1>
               <p className="text-purple-300 text-sm mt-1">Nível Champion · CoderDojo Braga · Membro desde Set 2024</p>
             </div>
             <div className="flex flex-col items-center gap-1">

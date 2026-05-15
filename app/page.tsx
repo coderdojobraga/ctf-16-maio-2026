@@ -23,7 +23,7 @@ export default function LandingPage() {
           <img src="/DojoLogo.svg" alt="CoderDojo Braga" className="h-9 w-auto" />
         </div>
         <div className="flex items-center gap-6 text-sm text-gray-600">
-          <span className="hidden sm:block">Cyber Challenge</span>
+          <span className="hidden sm:block">CoderDojo Braga</span>
           <span className="hidden sm:block">2026</span>
         </div>
       </nav>
@@ -38,10 +38,10 @@ export default function LandingPage() {
         >
           <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 leading-tight">
             Bem-vindo ao<br />
-            <span className="text-purple-700">CoderDojo Cyber Challenge!</span>
+            <span className="text-purple-700">CoderDojo Braga</span>
           </h1>
           <p className="text-lg text-gray-500 max-w-md mx-auto">
-            Vais juntar-te a nós nesta aventura de cibersegurança?
+            Vais juntar-te a nós nesta aventura a aprender a programar? Diz-nos qual é a tua linguagem preferida: 
           </p>
         </motion.div>
 
@@ -76,11 +76,10 @@ export default function LandingPage() {
           <div>
             <h2 className="text-xl font-bold flex items-center gap-2 mb-2">
               <span className="w-1 h-6 bg-purple-500 rounded-full inline-block" />
-              O que é o CoderDojo Cyber Challenge?
+              O que é o CoderDojo Braga?
             </h2>
             <p className="text-gray-400 leading-relaxed text-sm">
-              Um desafio interactivo de cibersegurança onde vais explorar conceitos reais como phishing,
-              manipulação de URLs, cifras e engenharia social — tudo de forma segura e educativa.
+              O CoderDojo Braga integra-se num movimento global, voluntário, sem fins lucrativos e que visa ensinar crianças e jovens dos 7 aos 17 anos a programar. O projeto pretende mostrar como a programação pode ser uma força de mudança positiva no mundo.
             </p>
           </div>
           <div className="text-right">
@@ -89,8 +88,7 @@ export default function LandingPage() {
               <span className="w-1 h-6 bg-purple-500 rounded-full inline-block" />
             </h2>
             <p className="text-gray-400 leading-relaxed text-sm">
-              Passas por 6 níveis progressivos. Cada nível ensina uma técnica de cibersegurança
-              diferente. Completas o desafio e avanças automaticamente para o próximo.
+              As sessões decorrem uma vez por mês no Departamento de Informática da Universidade do Minho, em Braga. São propostos diversos desafios aos Ninjas, consoante o nível em que se encontram, e que os mesmos tentam completar com a ajuda dos Mentores.
             </p>
           </div>
         </div>

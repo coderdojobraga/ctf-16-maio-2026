@@ -8,8 +8,8 @@ const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'CoderDojo Cyber Challenge',
-  description: 'Learn cybersecurity through interactive challenges',
+  title: 'CoderDojo Braga',
+  description: 'Faz parte da nossa iniciativa e aprende sobre cibersegurança neste desafio!',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
