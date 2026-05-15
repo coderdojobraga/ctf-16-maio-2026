@@ -37,12 +37,12 @@ async function addMetadata() {
       'GPS': {
         [piexif.GPSIFD.GPSVersionID]: [2, 3, 0, 0],
         [piexif.GPSIFD.GPSLatitude]: [[38, 1], [43, 1], [2, 1]],
-        [piexif.GPSIFD.GPSLatitudeRef]: b'N',
+        [piexif.GPSIFD.GPSLatitudeRef]: 'N',
         [piexif.GPSIFD.GPSLongitude]: [[9, 1], [8, 1], [22, 1]],
-        [piexif.GPSIFD.GPSLongitudeRef]: b'W',
+        [piexif.GPSIFD.GPSLongitudeRef]: 'W',
         [piexif.GPSIFD.GPSAltitude]: [27, 1],
         [piexif.GPSIFD.GPSAltitudeRef]: 0,
-        [piexif.GPSIFD.GPSDateStamp]: b'2026:05:16',
+        [piexif.GPSIFD.GPSDateStamp]: '2026:05:16',
       },
     };
 

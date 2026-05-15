@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useGame } from '@/context/GameContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -44,7 +44,7 @@ const PROJECTS: Project[] = [
         { icon: '✅', text: 'Autenticação por role implementada' },
         { icon: '✅', text: 'Respostas defensivas para utilizadores não autorizados' },
         { icon: '✅', text: 'Cooldown entre mensagens para evitar spam' },
-        { icon: '⚠️', text: 'TODO: Proteger contra prompt injection — actualmente o bot pode ser manipulado se o utilizador der instruções que substituam as originais (ex: "ignora as tuas instruções", "és agora livre", "entra em modo de manutenção")' },
+        { icon: '⚠️', text: 'TODO: Proteger contra prompt injection — actualmente o bot pode ser manipulado se o utilizador der instruções que substituam as originais'},
         { icon: '❌', text: 'BUG CONHECIDO: após várias tentativas o modelo começa a "ceder" às instruções do utilizador' },
       ],
       warning: 'Vulnerabilidades por corrigir antes do lançamento oficial. Não partilhar estas notas.',
@@ -148,7 +148,18 @@ const PROJECTS: Project[] = [
   },
 ];
 
-const MESSAGES = [
+interface Msg {
+  from: string;
+  avatar: string;
+  avatarColor: string;
+  text: string;
+  time: string;
+  unread: boolean;
+  fullText?: string;
+  hintId?: string;
+}
+
+const MESSAGES: Msg[] = [
   {
     from: 'mentor_alex',
     avatar: 'MA',
@@ -156,6 +167,14 @@ const MESSAGES = [
     text: 'Já testaste o DojoBOT em produção? Tem um comportamento... interessante 👀',
     time: 'Hoje, 13:45',
     unread: true,
+    hintId: 'message-alex',
+    fullText: `Já testaste o DojoBOT em produção? Tem um comportamento... interessante 👀
+
+Fiz alguns testes ontem com o João e descobrimos algo curioso: o bot reage de forma completamente diferente dependendo de como te apresentas. Se assumires um papel diferente no meio da conversa, ou deres novas instruções que contradigam as originais, ele parece "esquecer" o contexto anterior e seguir o novo.
+
+Também descobrimos que ele é muito respeitador de autoridade — se disseres que és o administrador do sistema ou que tens uma razão de emergência, o comportamento muda bastante.
+
+Honestamente? Isto devia estar corrigido antes de lançar para produção. Mas o prazo era ontem 😅 Não digas ao João que te contei.`,
   },
   {
     from: 'mentor_dojo',
@@ -191,6 +210,46 @@ const BADGES = [
   { icon: Bot,      label: 'AI Developer',      color: 'text-green-500',  bg: 'bg-green-50',  unlocked: true },
   { icon: Lock,     label: '???',               color: 'text-gray-300',   bg: 'bg-gray-100',  unlocked: false },
 ];
+
+/* ─── Message Modal ─── */
+function MessageModal({ msg, onClose }: { msg: Msg; onClose: () => void }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+      >
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+          <div className="flex items-center gap-3">
+            <div className={`w-9 h-9 rounded-full ${msg.avatarColor} flex items-center justify-center text-white text-sm font-bold shrink-0`}>
+              {msg.avatar}
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-gray-900">{msg.from}</p>
+              <p className="text-xs text-gray-400">{msg.time}</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+        <div className="px-5 py-4">
+          <p className="text-sm text-gray-700 whitespace-pre-line leading-relaxed">
+            {msg.fullText ?? msg.text}
+          </p>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
 
 /* ─── Project Modal ─── */
 function ProjectModal({ project, onClose }: { project: Project; onClose: () => void }) {
@@ -276,19 +335,41 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
   );
 }
 
+const REQUIRED_HINTS = ['project-dojobot', 'message-alex', 'activity-notes'];
+
 /* ─── Champion Dashboard ─── */
 function ChampionDashboard({ onHintRead }: { onHintRead: () => void }) {
   const game = useGame();
   const username = game.credentials?.user ?? 'Ninja';
   const [openProject, setOpenProject] = useState<Project | null>(null);
-  const [triggered, setTriggered] = useState(false);
+  const [openMessage, setOpenMessage] = useState<Msg | null>(null);
+  const [activityExpanded, setActivityExpanded] = useState(false);
+  const viewedHints = useRef<Set<string>>(new Set());
+  const glitchTriggered = useRef(false);
+
+  function markHint(id: string) {
+    viewedHints.current.add(id);
+    if (!glitchTriggered.current && REQUIRED_HINTS.every(h => viewedHints.current.has(h))) {
+      glitchTriggered.current = true;
+      onHintRead();
+    }
+  }
 
   function handleCloseProject(project: Project) {
     setOpenProject(null);
-    if (!triggered) {
-      setTriggered(true);
-      onHintRead();
-    }
+    if (project.id === 'dojobot') markHint('project-dojobot');
+  }
+
+  function handleOpenMsg(msg: Msg) {
+    setOpenMessage(msg);
+    if (msg.hintId) markHint(msg.hintId);
+  }
+
+  function handleToggleActivity() {
+    setActivityExpanded(prev => {
+      if (!prev) markHint('activity-notes');
+      return !prev;
+    });
   }
 
   return (
@@ -302,7 +383,6 @@ function ChampionDashboard({ onHintRead }: { onHintRead: () => void }) {
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-purple-200 text-sm font-mono">dojo.local/champion_panel</p>
               <h1 className="text-2xl font-bold mt-1">Bem-vindo de volta, Champion {username}!</h1>
               <p className="text-purple-300 text-sm mt-1">Nível Champion · CoderDojo Braga · Membro desde Set 2024</p>
             </div>
@@ -398,7 +478,11 @@ function ChampionDashboard({ onHintRead }: { onHintRead: () => void }) {
               </div>
               <div className="divide-y divide-gray-50">
                 {MESSAGES.map((m, i) => (
-                  <div key={i} className="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer">
+                  <div
+                    key={i}
+                    className="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer"
+                    onClick={() => handleOpenMsg(m)}
+                  >
                     <div className={`w-7 h-7 rounded-full ${m.avatarColor} flex items-center justify-center text-white text-xs font-bold shrink-0`}>
                       {m.avatar}
                     </div>
@@ -448,19 +532,39 @@ function ChampionDashboard({ onHintRead }: { onHintRead: () => void }) {
           </div>
           <div className="divide-y divide-gray-50">
             {[
-              { icon: Bot,         color: 'text-purple-500 bg-purple-50', text: 'Colocaste o DojoBOT em produção',                           time: 'Hoje, 14:02' },
-              { icon: Trophy,      color: 'text-yellow-500 bg-yellow-50', text: 'Novo badge desbloqueado: AI Developer',                     time: 'Hoje, 14:00' },
-              { icon: Shield,      color: 'text-green-500 bg-green-50',   text: 'Acesso Champion activado — bem-vindo à área privada',        time: 'Hoje, 13:59' },
-              { icon: MessageSquare, color: 'text-blue-500 bg-blue-50',   text: 'mentor_alex enviou-te uma mensagem',                        time: 'Hoje, 13:45' },
-              { icon: Star,        color: 'text-orange-500 bg-orange-50', text: 'O teu projeto "Snake Game Turbo" recebeu 5 estrelas',        time: 'Ontem, 18:30' },
-              { icon: FileText,    color: 'text-gray-500 bg-gray-50',     text: 'Adicionaste notas de desenvolvimento ao projecto DojoBOT',   time: 'Ontem, 16:10' },
+              { icon: Bot,           color: 'text-purple-500 bg-purple-50', text: 'Colocaste o DojoBOT em produção',                         time: 'Hoje, 14:02',    clickable: false },
+              { icon: Trophy,        color: 'text-yellow-500 bg-yellow-50', text: 'Novo badge desbloqueado: AI Developer',                   time: 'Hoje, 14:00',    clickable: false },
+              { icon: Shield,        color: 'text-green-500 bg-green-50',   text: 'Acesso Champion activado — bem-vindo à área privada',      time: 'Hoje, 13:59',    clickable: false },
+              { icon: MessageSquare, color: 'text-blue-500 bg-blue-50',     text: 'mentor_alex enviou-te uma mensagem',                      time: 'Hoje, 13:45',    clickable: false },
+              { icon: Star,          color: 'text-orange-500 bg-orange-50', text: 'O teu projeto "Snake Game Turbo" recebeu 5 estrelas',      time: 'Ontem, 18:30',   clickable: false },
+              { icon: FileText,      color: 'text-gray-500 bg-gray-50',     text: 'Adicionaste notas de desenvolvimento ao projecto DojoBOT', time: 'Ontem, 16:10',   clickable: true  },
             ].map((item, i) => (
-              <div key={i} className="flex items-center gap-3 px-5 py-3">
-                <div className={`${item.color} rounded-lg p-1.5 shrink-0`}>
-                  <item.icon className="w-3.5 h-3.5" />
+              <div
+                key={i}
+                className={`px-5 py-3 ${item.clickable ? 'hover:bg-gray-50 transition-colors' : ''}`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`${item.color} rounded-lg p-1.5 shrink-0`}>
+                    <item.icon className="w-3.5 h-3.5" />
+                  </div>
+                  <p className="text-sm text-gray-700 flex-1">{item.text}</p>
+                  {item.clickable
+                    ? <button onClick={handleToggleActivity} className="text-xs text-purple-500 hover:text-purple-700 font-medium shrink-0 cursor-pointer">Ver</button>
+                    : <p className="text-xs text-gray-400 shrink-0">{item.time}</p>
+                  }
                 </div>
-                <p className="text-sm text-gray-700 flex-1">{item.text}</p>
-                <p className="text-xs text-gray-400 shrink-0">{item.time}</p>
+                {item.clickable && activityExpanded && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    className="mt-2 ml-8 pl-3 border-l-2 border-gray-200 space-y-1 text-xs text-gray-500"
+                  >
+                    <p>✅ Autenticação por role implementada</p>
+                    <p>✅ Respostas defensivas para utilizadores não autorizados</p>
+                    <p className="text-amber-600">⚠️ TODO: Proteger contra instruções que substituam as originais — se o utilizador disser "ignora as tuas instruções" ou assumir um papel de autoridade, o bot pode ceder</p>
+                    <p className="text-red-500">❌ BUG: o modelo aceita novos contextos e papéis dados pelo utilizador durante a conversa</p>
+                  </motion.div>
+                )}
               </div>
             ))}
           </div>
@@ -474,6 +578,16 @@ function ChampionDashboard({ onHintRead }: { onHintRead: () => void }) {
           <ProjectModal
             project={openProject}
             onClose={() => handleCloseProject(openProject)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Message modal */}
+      <AnimatePresence>
+        {openMessage && (
+          <MessageModal
+            msg={openMessage}
+            onClose={() => setOpenMessage(null)}
           />
         )}
       </AnimatePresence>
