@@ -55,7 +55,7 @@ export default function LoginTab() {
         className="bg-white border border-gray-200 rounded-2xl w-full max-w-md shadow-sm p-8"
       >
         <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">CoderDojo Cyber</h1>
+          <h1 className="text-2xl font-bold text-gray-900">CoderDojo Braga</h1>
           <p className="text-gray-500 text-sm mt-1">Inicia sessão ou cria uma conta</p>
         </div>
 
@@ -109,7 +109,7 @@ export default function LoginTab() {
                   value={regCode} onChange={e => setRegCode(e.target.value)} placeholder="???-???-??????"
                 />
                 <p className="text-xs text-gray-400 mt-1">
-                  Não tens o código?{' '}
+                  Precisas de um código para criar um conta. Não tens o código?{' '}
                   <button type="button" onClick={() => setShowQuiz(true)} className="text-purple-600 hover:underline">
                     Descobre aqui
                   </button>
@@ -165,10 +165,7 @@ export default function LoginTab() {
                 <div>
                   <h3 className="font-bold text-gray-900 mb-2">Erro de autenticação</h3>
                   <p className="text-gray-600 text-sm mb-4">
-                    Nenhuma conta encontrada. Descobre o código secreto{' '}
-                    <button onClick={() => { setErrorModal(false); setMode('register'); setShowQuiz(true); }}
-                      className="text-purple-600 font-semibold hover:underline"
-                    >AQUI</button>.
+                    Nenhuma conta encontrada. Caso não tenhas uma conta, vai ser preciso criar uma nova.
                   </p>
                   <button onClick={() => setErrorModal(false)}
                     className="px-4 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm text-gray-700 transition-colors"

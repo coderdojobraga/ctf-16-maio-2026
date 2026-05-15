@@ -68,63 +68,38 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex flex-col h-screen bg-white overflow-hidden">
-      {/* Top bar */}
+      {/* Top bar (Permanece para o logótipo e Sair) */}
       <header className="bg-white border-b border-gray-100 px-6 py-3 shrink-0 z-10">
         <div className="flex items-center justify-between">
-          <button
-            onClick={() => router.push('/dashboard/blog')}
-            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
-          >
+          <div className="flex items-center gap-2">
             <img src="/DojoLogo.svg" alt="CoderDojo Braga" className="h-8 w-auto" />
-          </button>
+            <span className="text-xs font-mono text-gray-300 hidden sm:block">| Internal Portal</span>
+          </div>
 
           <div className="flex items-center gap-3">
             {game.credentials?.user && (
-              <span className="text-sm text-gray-500 hidden sm:block">
-                {game.credentials.user}
+              <span className="text-sm text-gray-500 hidden sm:block italic">
+                Sessão ativa: {game.credentials.user}
               </span>
             )}
             <button
               onClick={game.resetGame}
-              title="Sair"
               className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-red-500 transition-colors"
             >
               <LogOut className="w-4 h-4" />
-              <span className="hidden sm:block">Sair</span>
+              <span>Sair</span>
             </button>
           </div>
         </div>
       </header>
 
+      {/* Área de Conteúdo - Agora sem Sidebar para ser "seamless" */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <aside className="w-52 shrink-0 bg-white border-r border-gray-100 flex flex-col py-4 px-3 gap-1 overflow-y-auto">
-          <p className="text-xs text-gray-400 uppercase tracking-widest px-2 mb-2">Portal</p>
-          {NAV_ITEMS.map(({ tab, label, icon: Icon }) => {
-            const isActive = activeTab === tab;
-            return (
-              <button
-                key={tab}
-                onClick={() => router.push(`/dashboard/${tab}`)}
-                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium w-full text-left transition-colors ${
-                  isActive
-                    ? 'bg-purple-50 text-purple-700'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                }`}
-              >
-                <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-purple-600' : 'text-gray-400'}`} />
-                {label}
-              </button>
-            );
-          })}
-        </aside>
-
-        {/* Main content */}
         <motion.main
           key={activeTab}
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4 }}
           className="flex-1 overflow-y-auto bg-gray-50"
         >
           {children}

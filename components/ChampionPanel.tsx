@@ -3,25 +3,32 @@
 import { useEffect, useState } from 'react';
 import { useGame } from '@/context/GameContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Lock, Unlock, Wrench, Trophy } from 'lucide-react';
-import FakeDevTools from './FakeDevTools';
+import { Lock, Unlock, Trophy, RefreshCw, EyeOff } from 'lucide-react';
 
 const SCRATCH_PASSWORD = 'NINJA-HACKER';
 const CHAMPION_COOKIE = 'Y2hhbXBpb24';
+const MENTOR_COOKIE = 'bWVudG9y';
 
 export default function ChampionPanel() {
   const game = useGame();
+  
+  // Estados para o painel principal
   const [pass, setPass] = useState('');
   const [error, setError] = useState('');
-  const [showDevTools, setShowDevTools] = useState(false);
 
-  const cookieIsChampion = game.simulatedCookies.role === CHAMPION_COOKIE;
+  // Estados para o Cartão de Dica Secreta (Python)
+  const [hintPass, setHintPass] = useState('');
+  const [hintUnlocked, setHintUnlocked] = useState(false);
+  const [hintError, setHintError] = useState('');
+
+  // Para o nível Python, injeta um cookie REAL no browser do Ninja
   useEffect(() => {
-    if (game.path === 'python' && cookieIsChampion && game.currentLevel < 6) {
-      game.setLevel(6);
-      game.unlockTab('dojobot');
+    if (game.path === 'python' && game.currentLevel < 6) {
+      if (!document.cookie.includes('role=')) {
+        document.cookie = `role=${MENTOR_COOKIE}; path=/`;
+      }
     }
-  }, [cookieIsChampion, game.path, game.currentLevel]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [game.path, game.currentLevel]);
 
   if (game.currentLevel >= 6) return (
     <div className="flex flex-col items-center justify-center min-h-full p-8">
@@ -35,10 +42,47 @@ export default function ChampionPanel() {
     </div>
   );
 
+  // Lógica do botão Scratch
   function tryPass(e: React.FormEvent) {
     e.preventDefault();
-    if (pass === SCRATCH_PASSWORD) { game.setLevel(6); game.unlockTab('dojobot'); }
-    else setError('Senha incorrecta. Tenta de novo.');
+    if (pass === SCRATCH_PASSWORD) { 
+      game.setLevel(6); 
+      game.unlockTab('dojobot');
+    } else {
+      setError('Senha incorrecta. Tenta de novo.');
+    }
+  }
+
+  // Lógica de verificação do botão Python (lê os cookies REAIS)
+  function checkRealCookie() {
+    const cookies = document.cookie.split(';');
+    let roleValue = '';
+    
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.startsWith('role=')) {
+        roleValue = cookie.substring('role='.length);
+        break;
+      }
+    }
+
+    if (roleValue === CHAMPION_COOKIE) {
+      game.setLevel(6);
+      game.unlockTab('dojobot');
+    } else {
+      setError(`Permissão negada. O teu cookie atual é "${roleValue}". Sabes como fazer isso?`);
+    }
+  }
+
+  // Lógica para desbloquear a dica do cartão
+  function unlockHint(e: React.FormEvent) {
+    e.preventDefault();
+    if (hintPass.toLowerCase() === 'dica2026') {
+      setHintUnlocked(true);
+      setHintError('');
+    } else {
+      setHintError('Código de mentor inválido.');
+    }
   }
 
   return (
@@ -73,9 +117,9 @@ export default function ChampionPanel() {
               </button>
             </form>
             <div className="border-t border-gray-100 pt-4">
-              <p className="text-gray-400 text-xs">Pista: O código está no código-fonte da página.</p>
+              <p className="text-gray-400 text-xs"><strong>Nota para o champion:</strong> O código está no código-fonte que gera esta página.</p>
               <p className="text-gray-400 text-xs mt-1">
-                Tenta <kbd className="bg-gray-100 px-1 rounded text-gray-600">Ctrl+U</kbd> para ver o source...
+                Sabes como ver o <kbd className="bg-gray-100 px-1 rounded text-gray-600">código-fonte</kbd> de uma página?
               </p>
             </div>
           </div>
@@ -83,35 +127,71 @@ export default function ChampionPanel() {
           <div className="space-y-4">
             <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-left">
               <p className="text-gray-700 text-sm font-semibold mb-1">Permissão negada</p>
+              <p className="text-gray-500 text-xs mb-3">
+                O nosso sistema de segurança detetou que não és um Champion. Usamos <strong>Cookies</strong> no browser para verificar a tua identidade.
+              </p>
               <p className="text-gray-500 text-xs">
-                O teu cookie <code className="text-purple-600">role</code> é{' '}
-                <code className="text-gray-700">{game.simulatedCookies.role}</code>.
+                <strong>Nota para o champion:</strong> Não te esqueças de alterar os cookies do site para alterar as tuas permissões. (Não te esqueças de usar o mecanismo secreto para esconder o valor do cookie!)
               </p>
-              <p className="text-gray-500 text-xs mt-1">
-                Precisas do role <code className="text-purple-600">champion</code>. Modifica o cookie nas DevTools.
-              </p>
+
+              {/* Cartão de Dica com Flip Animation */}
+              <div className="mt-6 perspective-1000">
+                <AnimatePresence mode="wait">
+                  {!hintUnlocked ? (
+                    <motion.div
+                      key="locked"
+                      initial={{ rotateX: -90, opacity: 0 }}
+                      animate={{ rotateX: 0, opacity: 1 }}
+                      exit={{ rotateX: 90, opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="p-5 bg-gray-100 rounded-xl border border-gray-200 text-center space-y-4 shadow-inner"
+                    >
+                      <EyeOff className="w-8 h-8 mx-auto text-gray-400" />
+                      
+                      <form onSubmit={unlockHint}>
+                        <input
+                          type="password"
+                          value={hintPass}
+                          onChange={e => { setHintPass(e.target.value); setHintError(''); }}
+                          placeholder="Código..."
+                          className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 text-center font-mono"
+                        />
+                      </form>
+                      {hintError && <p className="text-red-500 text-[10px] m-0">{hintError}</p>}
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="unlocked"
+                      initial={{ rotateX: -90, opacity: 0 }}
+                      animate={{ rotateX: 0, opacity: 1 }}
+                      transition={{ duration: 0.3 }}
+                      className="p-4 bg-purple-50 rounded-xl text-xs font-mono text-purple-900 space-y-2 border border-purple-200 shadow-inner"
+                    >
+                      <p>mentor = <span className="text-blue-600">{MENTOR_COOKIE}</span></p>
+                      <p>champion = <span className="text-purple-600">???</span></p>
+                      <div className="mt-2 pt-2 border-t border-purple-200/50">
+                        <p className="text-[10px] text-purple-600 italic">// Dica: O valor original está codificado.</p>
+                        <p className="text-[10px] text-purple-600 italic">// Usa um conversor de Base64 online para descobrir.</p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
             </div>
+            
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+            
             <button
-              onClick={() => setShowDevTools(v => !v)}
-              className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-colors border ${
-                showDevTools
-                  ? 'bg-gray-900 border-gray-900 text-white'
-                  : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
-              }`}
+              onClick={checkRealCookie}
+              className="w-full flex items-center justify-center gap-2 py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-xl text-sm font-semibold transition-colors"
             >
-              <Wrench className="w-4 h-4" />
-              {showDevTools ? 'Fechar DevTools' : 'Abrir DevTools'}
+              <RefreshCw className="w-4 h-4" />
+              Verificar Permissões
             </button>
           </div>
         )}
       </motion.div>
-
-      {game.path === 'python' && showDevTools && (
-        <div className="w-full max-w-2xl border border-gray-200 rounded-2xl overflow-hidden bg-white h-96 shadow-sm">
-          <FakeDevTools />
-        </div>
-      )}
-
     </div>
   );
 }

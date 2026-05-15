@@ -100,6 +100,9 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
   const resetGame = useCallback(() => {
     localStorage.removeItem(STORAGE_KEY);
+    
+    document.cookie = "role=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    
     setState(defaultState);
   }, []);
 
