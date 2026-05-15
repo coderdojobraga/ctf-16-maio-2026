@@ -337,7 +337,7 @@ export default function BlogTab() {
 
           <p>
             Cada diretório pode conter mais páginas, imagens, jogos ou
-            ficheiros especiais. Secalhar este blog tem texto escondido onde estão escritas diretorias secretas.
+            ficheiros especiais. Se calhar este blog tem texto escondido onde estão escritas diretorias secretas.
           </p>
 
           <p>
