@@ -10,7 +10,7 @@ import { LogOut, LayoutDashboard, BookOpen, Users, Mail, ShieldCheck, Bot } from
 const NAV_ITEMS = [
   { tab: 'blog',           label: 'Blog',          icon: BookOpen },
   { tab: 'mentores',       label: 'Mentores',       icon: Users },
-  { tab: 'emails',         label: 'Inbox',          icon: Mail },
+  { tab: 'emkors/inbox',   label: 'Inbox',          icon: Mail },
   { tab: 'champion_panel', label: 'Área Privada',   icon: ShieldCheck },
   { tab: 'dojobot',        label: 'DojoBOT',        icon: Bot },
 ];
@@ -18,7 +18,7 @@ const NAV_ITEMS = [
 const UNLOCK_TOASTS: Record<string, [string, string]> = {
   blog:           ['Bem-vindo!', 'Explora o site à vontade.'],
   mentores:       ['Secção encontrada', 'Acedeste à página de mentores.'],
-  emails:         ['Inbox disponível', 'Tens mensagens pendentes.'],
+  'emkors/inbox': ['Inbox descoberta', 'Acedeste à caixa de correio secreta.'],
   champion_panel: ['Área Privada', 'Verifica as tuas permissões de acesso.'],
   dojobot:        ['DojoBOT', 'O assistente virtual do CoderDojo está disponível.'],
 };
@@ -29,7 +29,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const game = useGame();
   const { toast } = useToast();
 
-  const activeTab = pathname.split('/').pop() ?? 'login';
+  const segments = pathname.split('/').filter(Boolean);
+  const activeTab = segments.length > 1 ? segments.slice(1).join('/') : 'login';
   const prevTabsLength = useRef(game.unlockedTabs.length);
   const onLoginPage = activeTab === 'login';
 

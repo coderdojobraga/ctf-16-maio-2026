@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useGame } from '@/context/GameContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertCircle, Loader2 } from 'lucide-react';
@@ -10,6 +11,7 @@ import { useToast } from './Toast';
 type Mode = 'login' | 'register';
 
 export default function LoginTab() {
+  const router = useRouter();
   const game = useGame();
   const { toast } = useToast();
   const [mode, setMode] = useState<Mode>('login');
@@ -38,8 +40,11 @@ export default function LoginTab() {
     if (!regUser || !regEmail || !regPass) { setRegError('Preenche todos os campos.'); return; }
     game.setCredentials({ user: regUser, email: regEmail, pass: regPass });
     game.setLevel(2);
-    game.unlockTab('blog');
+    if (!game.unlockedTabs.includes('blog')) {
+      game.unlockTab('blog');
+    }
     toast('success', `Bem-vindo, ${regUser}!`, 'A tua conta foi criada com sucesso.');
+    router.push('/dashboard/blog');
   }
 
   return (
