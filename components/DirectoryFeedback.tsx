@@ -38,7 +38,7 @@ export default function DirectoryFeedback({ type, title, message, explanation }:
         )}
 
         <button
-          onClick={() => router.push('/dashboard/blog')}
+          onClick={() => router.push('/dashboard/blog/directories')}
           className="flex items-center gap-2 px-6 py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-xl text-sm font-semibold transition-colors mx-auto"
         >
           <ArrowLeft className="w-4 h-4" /> Voltar ao Blog
