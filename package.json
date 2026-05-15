@@ -11,6 +11,7 @@
     "postinstall": "npm run setup:images"
   },
   "dependencies": {
+    "@types/piexifjs": "^1.0.0",
     "framer-motion": "^12.38.0",
     "lucide-react": "^1.14.0",
     "next": "16.2.6",
