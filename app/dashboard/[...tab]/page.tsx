@@ -66,6 +66,11 @@ export default function TabPage({ params }: { params: Promise<{ tab: string | st
 
   if (isLocked && !bypassLock) return <AccessDenied tab={tab} />;
 
+  if (tab.startsWith('blog/')) {
+    const postId = tab.slice(5);
+    return <BlogTab postId={postId} />;
+  }
+
   switch (tab) {
     case 'login':          return <LoginTab />;
     case 'blog':           return <BlogTab />;

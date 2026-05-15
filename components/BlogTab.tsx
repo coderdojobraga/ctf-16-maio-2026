@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useGame } from '@/context/GameContext';
 import { motion } from 'framer-motion';
 import { Clock, ChevronRight, ArrowLeft, BookOpen } from 'lucide-react';
@@ -260,22 +260,22 @@ São pequenos ficheiros usados pelos sites.
   },
 ];
 
-export default function BlogTab() {
+export default function BlogTab({ postId }: { postId?: string } = {}) {
   const { path } = useGame();
-  const [selectedPost, setSelectedPost] = useState<string | null>(null);
+  const router = useRouter();
 
   const filteredPosts = POSTS.filter(
     (p) => !p.path || p.path === path
   );
 
-  const currentPost = POSTS.find((p) => p.id === selectedPost);
+  const currentPost = postId ? POSTS.find((p) => p.id === postId) : null;
 
-  if (selectedPost && currentPost) {
+  if (postId && currentPost) {
     if (currentPost.id === 'directories') {
       return (
         <article className="max-w-3xl mx-auto p-8 text-gray-700 space-y-6">
           <button
-            onClick={() => setSelectedPost(null)}
+            onClick={() => router.push('/dashboard/blog')}
             className="flex items-center gap-2 text-sm text-purple-600 hover:text-purple-800 transition-colors mb-4"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -470,7 +470,7 @@ export default function BlogTab() {
     return (
       <article className="max-w-3xl mx-auto p-8 text-gray-700 space-y-6">
         <button
-          onClick={() => setSelectedPost(null)}
+          onClick={() => router.push('/dashboard/blog')}
           className="flex items-center gap-2 text-sm text-purple-600 hover:text-purple-800 transition-colors mb-4"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -519,7 +519,7 @@ export default function BlogTab() {
           <motion.div
             key={post.id}
             whileHover={{ y: -3 }}
-            onClick={() => setSelectedPost(post.id)}
+            onClick={() => router.push(`/dashboard/blog/${post.id}`)}
             className={`cursor-pointer bg-white border rounded-2xl p-6 shadow-sm transition-all hover:shadow-md ${
               post.featured
                 ? 'border-purple-300 bg-purple-50/40'
