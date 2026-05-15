@@ -3,28 +3,28 @@
 import { useState, useMemo } from 'react';
 import { useGame } from '@/context/GameContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Smartphone, AlertCircle, CheckCircle2, Search, X, ShieldAlert } from 'lucide-react';
+import { Mail, Smartphone, ShieldAlert, CheckCircle2, Search, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface FakeEmail {
-  id: number;
+  id: number | string;
   from: string;
   replyTo?: string;
   subject: string;
   body: (username: string, token: string) => string;
   linkText: string;
-  linkHref: string;        // what it SHOWS
-  realHref: string;        // where it ACTUALLY goes
+  linkHref: string;        
+  realHref: string;        
   isReal: false;
   technique: string;
   explanation: string;
-  stolen: string;          // what would have been stolen
+  stolen: string;          
 }
 
 interface RealEmail {
-  id: number;
+  id: number | string;
   from: string;
   subject: string;
   body: (username: string, token: string) => string;
@@ -34,11 +34,77 @@ interface RealEmail {
 
 type Email = FakeEmail | RealEmail;
 
-// ─── Email Data ───────────────────────────────────────────────────────────────
-function buildEmails(username: string, token: string): Email[] {
+// ─── Email Data (PYTHON) ──────────────────────────────────────────────────────
+function buildEmails(username: string, token: string | null): Email[] {
+  if (!token) {
+    return [
+      {
+        id: 888,
+        from: 'admin@coderdojo.local',
+        subject: 'Bem-vindo ao CoderDojo Braga',
+        body: () => `Bem vindo ao CoderDojo Braga!\n\nCaso sejas mentor (ou queiras mentir e dizeres que és um), vai à aba dos mentores, pede para enviarem um email de acesso e volta aqui para veres o teu link de confirmação.`,
+        linkText: 'Não tens links disponíveis.',
+        isReal: true,
+      } as RealEmail
+    ];
+  }
+
   const fakes: FakeEmail[] = [
     {
       id: 2,
+      from: 'admin@cod3rdojo.local',
+      subject: 'URGENTE: Acesso Bloqueado',
+      body: (u) => `Caro ${u},\n\nO teu acesso foi bloqueado por motivos de segurança. Clica no link abaixo para validar a tua conta imediatamente, caso contrário será apagada permanentemente.`,
+      linkText: 'Validar Conta',
+      linkHref: 'dojo.local/verify',
+      realHref: 'cod3rdojo.local/steal-data',
+      isReal: false,
+      technique: 'Typosquatting & Urgência',
+      explanation: 'O atacante usou um domínio muito parecido (cod3rdojo em vez de coderdojo) e criou um sentido de urgência falso para te forçar a agir sem pensar.',
+      stolen: 'A tua password de acesso ao portal do CoderDojo.'
+    },
+    {
+      id: 3,
+      from: 'it-support@coderdojo.local',
+      replyTo: 'hacker1337@gmail.com',
+      subject: 'Atualização da Caixa de Correio',
+      body: () => `A tua caixa de correio está quase cheia. Por favor, faz login no novo portal para aumentares o teu espaço gratuito de armazenamento.`,
+      linkText: 'Aumentar Espaço',
+      linkHref: 'coderdojo.local/quota',
+      realHref: 'malware-xyz.com/login',
+      isReal: false,
+      technique: 'Reply-To Spoofing',
+      explanation: 'Embora o remetente pareça o nosso suporte oficial, a propriedade "Reply-To" iria enviar a tua resposta (e dados) diretamente para um endereço do Gmail externo.',
+      stolen: 'As tuas credenciais de email.'
+    },
+    {
+      id: 4,
+      from: 'guilherme.ferreira@mentor-dojo.pt',
+      subject: 'Partilha de Documento Restrito',
+      body: (u) => `Olá ${u},\n\nPartilhei contigo o ficheiro restrito "Avaliação_Ninjas_2026.pdf". Clica abaixo para abrir através da tua conta Microsoft.`,
+      linkText: 'Abrir Documento',
+      linkHref: 'onedrive.com/file/xyz',
+      realHref: '0nedrive-login.com/phish',
+      isReal: false,
+      technique: 'Spear Phishing / Autoridade',
+      explanation: 'O atacante fez-se passar por uma figura de autoridade conhecida no CoderDojo (Guilherme Ferreira) para te dar confiança e te levar a abrir um ficheiro malicioso.',
+      stolen: 'A tua sessão do browser e possível instalação de vírus no computador.'
+    },
+    {
+      id: 5,
+      from: 'recursos.humanos@coderdojo.local',
+      subject: 'Pagamento Extraordinário - Mentores',
+      body: (u) => `Olá ${u},\n\nDevido ao teu excelente desempenho, tens direito a um bónus de 50€. Clica no link para inserires o teu IBAN e receberes a transferência.`,
+      linkText: 'Reclamar Bónus de 50€',
+      linkHref: 'coderdojo.local/bonus',
+      realHref: 'scam-money.net/collect',
+      isReal: false,
+      technique: 'Isco Financeiro (Baiting)',
+      explanation: 'Ataques de phishing usam frequentemente prémios monetários falsos para tentar roubar os teus dados bancários.',
+      stolen: 'Os teus dados bancários e informações pessoais.'
+    },
+    {
+      id: 7,
       from: 'adm1n@cod3rdoj0.local',
       subject: `URGENTE: Confirma o teu acesso como mentor — ${username}`,
       body: (u) => `Olá ${u},\n\nHouve um erro ao validar o teu acesso ao painel de mentores CoderDojo.\n\nPara garantir que o teu acesso não é revogado, clica imediatamente no botão abaixo para confirmar os teus dados!\n\nEquipa CoderDojo`,
@@ -51,7 +117,7 @@ function buildEmails(username: string, token: string): Email[] {
       stolen: 'Credenciais de login',
     },
     {
-      id: 5,
+      id: 8,
       from: 'coderdojo.pt@gmail.com',
       subject: `[Aprovado] Confirma o teu acesso como mentor — ${username}`,
       body: (u) => `Olá ${u},\n\nA tua conta de mentor CoderDojo foi aprovada.\n\nClica no link abaixo para aceder ao teu painel de administração e veres os teus ninjas registados.\n\nhttp://bit.ly/coderdojo-acesso-2026\n\nAté já!`,
@@ -135,28 +201,33 @@ function buildEmails(username: string, token: string): Email[] {
     id: 1,
     from: 'noreply@coderdojo.local',
     subject: `Confirma o teu acesso como mentor — ${username}`,
-    body: (u, t) =>
-      `Olá ${u},\n\nRecebemos o teu pedido de acesso ao painel de mentores CoderDojo.\n\nPara confirmar, clica no botão abaixo. O link é válido por 24 horas.\n\nToken de verificação: ${t}\n\nSe não fizeste este pedido, podes ignorar este email em segurança.\n\nEquipa CoderDojo`,
+    body: (u, t) => `Olá ${u},\n\nRecebemos o teu pedido de acesso ao painel de mentores CoderDojo.\n\nPara confirmar, clica no botão abaixo. O link é válido por 24 horas.\n\nToken de verificação: ${t}\n\nSe não fizeste este pedido, podes ignorar este email em segurança.\n\nEquipa CoderDojo`,
     linkText: 'Confirmar acesso ao painel →',
     isReal: true,
   };
 
-  // Shuffle and inject real email at a random position
-  const shuffled: Email[] = [...fakes].sort(() => Math.random() - 0.5);
-  const insertAt = Math.floor(Math.random() * shuffled.length);
+  const educational: RealEmail = {
+    id: 999,
+    from: 'seguranca@coderdojo.local',
+    subject: '❗ CUIDADO: Ataques de Phishing em curso',
+    body: () => `Cuidado Membros do CoderDojo Braga.\n\nSoubemos que os nossos membros sofreram um ataque de phishing recentemente.\n\nO que é Phishing?\nPhishing é uma técnica de engano onde os atacantes fingem ser uma entidade de confiança para roubar as tuas passwords ou instalar vírus.\n\nDicas de Segurança:\n- Desconfia de emails com tom de urgência ou ofertas boas demais.\n- Verifica SEMPRE o domínio de quem envia o email.\n- Analisa o destino real dos links antes de clicares.\n\nPassa o rato pelos links (sem clicar) e analisa bem as opções abaixo!`,
+    linkText: 'Compreendido',
+    isReal: true,
+  };
+
+  const shuffled: Email[] = [...fakes].sort(() => Math.random() - 0.5);  const insertAt = Math.floor(Math.random() * shuffled.length);
   shuffled.splice(insertAt, 0, real);
-  return shuffled;
+  
+  return [educational, ...shuffled];
 }
 
 // ─── Phishing Alert Modal ─────────────────────────────────────────────────────
 function PhishingModal({ email, onClose }: { email: FakeEmail; onClose: () => void }) {
   return (
-    <motion.div
-      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
     >
-      <motion.div
-        initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9 }}
+      <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9 }}
         className="bg-gray-900 border border-red-700 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden"
       >
         <div className="bg-red-950/60 border-b border-red-800 px-5 py-4 flex items-start gap-3">
@@ -184,20 +255,17 @@ function PhishingModal({ email, onClose }: { email: FakeEmail; onClose: () => vo
           </div>
           <div className="grid grid-cols-2 gap-2 text-xs">
             <div className="bg-gray-800 rounded-xl p-2">
-              <p className="text-gray-500 mb-0.5">Remetente real</p>
-              <p className="text-white font-mono break-all">{email.from}</p>
+              <p className="text-gray-500 mb-0.5">Destino aparente</p>
+              <p className="text-white font-mono break-all">{email.linkHref}</p>
             </div>
             <div className="bg-gray-800 rounded-xl p-2">
-              <p className="text-gray-500 mb-0.5">Destino real do link</p>
+              <p className="text-gray-500 mb-0.5">Destino REAL do link</p>
               <p className="text-red-400 font-mono break-all">{email.realHref}</p>
             </div>
           </div>
-          <button
-            onClick={onClose}
+          <button onClick={onClose}
             className="w-full py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-xl text-sm font-semibold transition-colors"
-          >
-            Compreendi — Continuar a pesquisar
-          </button>
+          >Compreendi — Continuar a pesquisar</button>
         </div>
       </motion.div>
     </motion.div>
@@ -208,7 +276,7 @@ function PhishingModal({ email, onClose }: { email: FakeEmail; onClose: () => vo
 function PythonInbox() {
   const router = useRouter();
   const game = useGame();
-  const token = game.mentorToken ?? 'XXX-XXX-XXX';
+  const token = game.mentorToken;
   const username = game.credentials?.user ?? 'ninja';
 
   const emails = useMemo(() => buildEmails(username, token), [username, token]);
@@ -217,7 +285,6 @@ function PythonInbox() {
   const [alertEmail, setAlertEmail] = useState<FakeEmail | null>(null);
   const [success, setSuccess] = useState(false);
   const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState<'all' | 'unread'>('all');
 
   const filtered = emails.filter(e =>
     e.subject.toLowerCase().includes(search.toLowerCase()) ||
@@ -225,13 +292,17 @@ function PythonInbox() {
   );
 
   function clickLink(email: Email) {
+    if (email.id === 888) return; 
+    if (email.id === 999) {
+      alert('Lê bem as dicas antes de prosseguires.');
+      return;
+    }
+
     if (email.isReal) {
       setSuccess(true);
       setTimeout(() => {
         game.setLevel(5);
-        if (!game.unlockedTabs.includes('champion_panel')) {
-          game.unlockTab('champion_panel');
-        }
+        if (!game.unlockedTabs.includes('champion_panel')) game.unlockTab('champion_panel');
         router.push('/dashboard/champion_panel');
       }, 1500);
     } else {
@@ -241,7 +312,6 @@ function PythonInbox() {
 
   return (
     <div className="flex h-full min-h-[600px] bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm m-6">
-      {/* Sidebar */}
       <div className="w-64 border-r border-gray-200 flex flex-col bg-gray-50">
         <div className="p-3 border-b border-gray-200 space-y-2">
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
@@ -260,28 +330,19 @@ function PythonInbox() {
 
         <div className="flex-1 overflow-y-auto">
           {filtered.map(e => (
-            <button
-              key={e.id}
-              onClick={() => setSelected(e)}
+            <button key={e.id} onClick={() => setSelected(e)}
               className={`w-full text-left px-3 py-2.5 border-b border-gray-100 hover:bg-gray-100 transition-colors ${
                 selected?.id === e.id ? 'bg-blue-50 border-l-2 border-l-blue-500' : ''
               }`}
             >
-              <p className={`text-xs font-semibold truncate text-gray-900`}>
-                {e.from}
-              </p>
+              <p className={`text-xs font-semibold truncate text-gray-900`}>{e.from}</p>
               <p className="text-xs text-gray-500 truncate mt-0.5">{e.subject}</p>
             </button>
           ))}
         </div>
-
-        <div className="p-3 border-t border-gray-200 text-xs text-gray-500">
-          <p>💡 1 email é legítimo. Encontra-o.</p>
-        </div>
       </div>
 
-      {/* Email body */}
-      <div className="flex-1 overflow-y-auto bg-white">
+      <div className="flex-1 overflow-y-auto bg-white relative">
         {success ? (
           <div className="flex flex-col items-center justify-center h-full gap-4 text-green-600 p-8">
             <CheckCircle2 className="w-14 h-14" />
@@ -290,7 +351,6 @@ function PythonInbox() {
           </div>
         ) : selected ? (
           <div className="max-w-2xl mx-auto p-6 space-y-5">
-            {/* Email header */}
             <div className="border-b border-gray-200 pb-4 space-y-2">
               <h2 className="text-gray-900 font-bold text-lg">{selected.subject}</h2>
               <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
@@ -311,23 +371,25 @@ function PythonInbox() {
               </div>
             </div>
 
-            {/* Body */}
             <div className="text-gray-800 text-sm leading-relaxed whitespace-pre-line bg-gray-50 rounded-xl p-4 border border-gray-200">
-              {selected.body(username, token)}
+              {selected.body(username, token ?? '')}
             </div>
 
-            {/* CTA button */}
             <div>
-              <button
-                onClick={() => clickLink(selected)}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
+              <button onClick={() => clickLink(selected)}
+                className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-sm ${
+                  selected.id === 888 || selected.id === 999 ? 'bg-gray-200 text-gray-600 cursor-default' : 'bg-blue-600 hover:bg-blue-700 text-white'
+                }`}
               >
                 {selected.linkText}
               </button>
               {!selected.isReal && (
-                <p className="text-xs text-gray-400 mt-2 font-mono">
-                  → {(selected as FakeEmail).linkHref}
-                </p>
+                <div className="mt-2 text-xs font-mono group inline-block relative">
+                   <span className="text-gray-400 cursor-help">→ {selected.linkHref}</span>
+                   <div className="absolute top-full left-0 mt-1 opacity-0 group-hover:opacity-100 bg-gray-900 text-red-400 px-2 py-1 rounded transition-opacity duration-300 pointer-events-none z-10">
+                     Destino Real: {selected.realHref}
+                   </div>
+                </div>
               )}
             </div>
           </div>
@@ -335,97 +397,71 @@ function PythonInbox() {
           <div className="flex flex-col items-center justify-center h-full text-gray-400 gap-3">
             <Mail className="w-12 h-12" />
             <p className="text-sm font-medium text-gray-500">Seleciona um email para ler</p>
-            <p className="text-xs max-w-xs text-center text-gray-400">
-              Analisa cuidadosamente cada email. Verifica o remetente, o tom, o token e o destino dos links.
-            </p>
           </div>
         )}
       </div>
 
       <AnimatePresence>
-        {alertEmail && (
-          <PhishingModal email={alertEmail} onClose={() => setAlertEmail(null)} />
-        )}
+        {alertEmail && <PhishingModal email={alertEmail} onClose={() => setAlertEmail(null)} />}
       </AnimatePresence>
     </div>
   );
 }
 
-// ─── Scratch: Mobile notifications (unchanged) ────────────────────────────────
+// ─── Scratch: Mobile notifications ─────────────────────────────────────────────
 function ScratchInbox() {
   const router = useRouter();
   const game = useGame();
   const [hoveredUrl, setHoveredUrl] = useState<string | null>(null);
   const [wrong, setWrong] = useState<string | null>(null);
 
-  const notifications = [
-    {
-      id: '2',
-      app: 'CoderDojo Admin',
-      msg: 'ERRO Crítico no painel! Confirma o teu acesso rápido para não seres expulso.',
-      isReal: false,
-      displayUrl: 'coderdojo.local/verify',
-      realUrl: 'cod3rdoj0.local/steal',
-    },
-    {
-      id: '3',
-      app: 'Mentores Dojo',
-      msg: 'Acesso aprovado! Acede a este link encurtado para veres os teus ninjas.',
-      isReal: false,
-      displayUrl: 'bit.ly/acesso-mentor',
-      realUrl: 'malware-xyz.com/trojan.exe',
-    },
-    {
-      id: '4',
-      app: 'InstaGram',
-      msg: 'Alguém tentou entrar na tua conta. Muda a password.',
-      isReal: false,
-      displayUrl: 'instagram.com/secure',
-      realUrl: 'lnstagram-security.net/login',
-    },
-    {
-      id: '5',
-      app: 'Correios',
-      msg: 'A tua encomenda está retida na alfândega. Paga 2€ para libertar.',
-      isReal: false,
-      displayUrl: 'ctt.pt/tracking',
-      realUrl: 'ctt-alfandega.com/pagar',
-    },
-    {
-      id: '1',
-      app: 'CoderDojo',
-      msg: `Olá ${game.credentials?.user ?? 'Ninja'}! Confirma o teu login no link abaixo.`,
-      isReal: true,
-      displayUrl: 'dojo.local/confirm',
-      realUrl: 'dojo.local/confirm',
-    },
-    {
-      id: '6',
-      app: 'WhatsApp',
-      msg: 'Tens 3 novas mensagens de voz. Ouve agora.',
-      isReal: false,
-      displayUrl: 'whatsapp.com/voice',
-      realUrl: 'whats-app-voice.ru/malware',
-    },
-    {
-      id: '7',
-      app: 'My Games',
-      msg: 'A tua assinatura Xbox expira amanhã. Renova aqui.',
-      isReal: false,
-      displayUrl: 'xbox.com/renew',
-      realUrl: 'xboox-renew.com/billing',
-    },
-  ];
+  const hasToken = !!game.mentorToken;
 
-  function click(n: typeof notifications[0]) {
+  // O useMemo "lembra-se" da ordem para não baralhar a cada hover do rato!
+  const notifications = useMemo(() => {
+    const realNotification = {
+      id: '1', app: 'CoderDojo',
+      msg: `Olá ${game.credentials?.user ?? 'Ninja'}! Confirma o teu login no link abaixo.`,
+      isReal: true, displayUrl: 'dojo.local/confirm', realUrl: 'dojo.local/confirm',
+    };
+
+    const fakeNotifications = [
+      { id: '2', app: 'CoderDojo Admin', msg: 'ERRO Crítico no painel! Confirma o teu acesso rápido para não seres expulso.', isReal: false, displayUrl: 'coderdojo.local/verify', realUrl: 'cod3rdoj0.local/steal' },
+      { id: '3', app: 'Mentores Dojo', msg: 'Acesso aprovado! Acede a este link encurtado para veres os teus ninjas.', isReal: false, displayUrl: 'bit.ly/acesso-mentor', realUrl: 'malware-xyz.com/trojan.exe' },
+      { id: '4', app: 'InstaGram', msg: 'Alguém tentou entrar na tua conta. Muda a password.', isReal: false, displayUrl: 'instagram.com/secure', realUrl: 'lnstagram-security.net/login' },
+      { id: '5', app: 'Correios', msg: 'A tua encomenda está retida na alfândega. Paga 2€ para libertar.', isReal: false, displayUrl: 'ctt.pt/tracking', realUrl: 'ctt-alfandega.com/pagar' },
+      { id: '6', app: 'WhatsApp', msg: 'Tens 3 novas mensagens de voz. Ouve agora.', isReal: false, displayUrl: 'whatsapp.com/voice', realUrl: 'whats-app-voice.ru/malware' },
+      { id: '7', app: 'My Games', msg: 'A tua assinatura Xbox expira amanhã. Renova aqui.', isReal: false, displayUrl: 'xbox.com/renew', realUrl: 'xboox-renew.com/billing' },
+    ];
+
+    const educationalNotif = {
+      id: '999', app: 'Segurança',
+      msg: '❗ CUIDADO: Phishing a decorrer! Passa o rato pelos botões antes de clicares para veres o site real.',
+      isReal: true, displayUrl: 'Compreendido', realUrl: 'Aviso Lido',
+    };
+
+    const noTokenNotifs = [
+      { id: '888', app: 'CoderDojo Admin', msg: 'Para receberes a notificação de Mentor, pede o acesso na página dos Mentores primeiro.', isReal: true, displayUrl: 'Ir para Mentores', realUrl: 'dojo.local/mentores' }
+    ];
+
+    // Se não há token, mostra a mensagem de bloqueio
+    if (!hasToken) return noTokenNotifs;
+
+    // Se há token, baralha apenas uma vez as falsas e a verdadeira
+    const mixed = [...fakeNotifications, realNotification].sort(() => Math.random() - 0.5);
+
+    // O aviso educativo fica fixo no topo, seguido pelas baralhadas
+    return [educationalNotif, ...mixed];
+  }, [hasToken, game.credentials?.user]);
+
+  function click(n: any) {
+    if (n.id === '888') return; 
+    if (n.id === '999') { alert('Aviso de Segurança lido!'); return; }
+
     if (n.isReal) {
       game.setLevel(5);
-      if (!game.unlockedTabs.includes('champion_panel')) {
-        game.unlockTab('champion_panel');
-      }
-      setTimeout(() => {
-        router.push('/dashboard/champion_panel');
-      }, 500);
+      if (!game.unlockedTabs.includes('champion_panel')) game.unlockTab('champion_panel');
+      router.push('/dashboard/champion_panel');
     } else {
       setWrong(n.id);
     }
@@ -441,7 +477,6 @@ function ScratchInbox() {
           <span>9:41</span><span>🔋 87%</span>
         </div>
         
-        {/* Scrollable Area */}
         <div className="space-y-3 flex-1 overflow-y-auto pr-1 pb-4" style={{ scrollbarWidth: 'none' }}>
           {notifications.map(n => (
             <div key={n.id} className={`bg-gray-800/90 rounded-2xl p-3 border ${wrong === n.id ? 'border-red-500' : 'border-gray-700'}`}>
@@ -454,7 +489,7 @@ function ScratchInbox() {
                 onMouseEnter={() => setHoveredUrl(n.realUrl)}
                 onMouseLeave={() => setHoveredUrl(null)}
                 onClick={() => click(n)}
-                className="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded-full"
+                className={`text-xs px-3 py-1 rounded-full ${n.id === '888' || n.id === '999' ? 'bg-gray-600 text-gray-300' : 'bg-blue-600 hover:bg-blue-500 text-white'}`}
               >
                 {n.displayUrl}
               </button>
@@ -463,7 +498,6 @@ function ScratchInbox() {
           ))}
         </div>
         
-        {/* Decorative Home Indicator */}
         <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-24 h-1 bg-gray-700/50 rounded-full shrink-0"></div>
       </div>
       <div className="h-12 flex items-center justify-center">
@@ -472,7 +506,7 @@ function ScratchInbox() {
             <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
               className="bg-gray-800 border border-gray-600 rounded-xl px-4 py-2 font-mono text-sm text-green-400"
             >
-              URL real: <span className="text-red-300">{hoveredUrl}</span>
+              Destino real: <span className="text-red-300">{hoveredUrl}</span>
             </motion.div>
           )}
         </AnimatePresence>
