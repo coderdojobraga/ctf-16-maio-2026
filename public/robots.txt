@@ -1,0 +1,9 @@
+# Olá, ninja curioso! 👀
+# Este ficheiro diz aos motores de busca o que podem (ou não) visitar.
+
+User-agent: *
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /mentores
+
+# Curioso? Bom sinal. É assim que começa um bom hacker ético.
