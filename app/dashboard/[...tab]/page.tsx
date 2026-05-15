@@ -76,7 +76,7 @@ export default function TabPage({ params }: { params: Promise<{ tab: string | st
     
     case 'jogos': return <DirectoryFeedback type="test" title="Boa!" message="Pasta de jogos." />;
     case 'imagens': return <DirectoryFeedback type="test" title="Excelente!" message="Diretoria de imagens." />;
-    case 'six-seven': return <DirectoryFeedback type="false" title="SIX-SEVEN!" message="Volta a tentar..." />;
+    case 'six-seven': return <DirectoryFeedback type="false" title="SIX-SEVENNNNNN!" message="Descobriste o sítio do six-seven, mas isto é só uma piada, não te leva a lado nenhum... (Se estás a fazer o gesto com as mãos deves ter 5 anos)" />;
     case 'dojo': return <DirectoryFeedback type="false" title="Quase!" message="Não é esta a que procuras." />;
     case 'programar': return <DirectoryFeedback type="false" title="Tenta outra vez" message="Não é este o caminho." />;
 

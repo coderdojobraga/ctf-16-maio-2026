@@ -34,7 +34,7 @@ Se gostas de tecnologia, jogos, computadores ou simplesmente descobrir como as c
 
   {
     id: 'directories',
-    title: 'Guia: O que são Diretórios Web?',
+    title: 'Guia: O que são Diretorias Web?',
     excerpt:
       'Alguma vez te perguntaste como é que os sites organizam os seus ficheiros? Nem tudo o que existe está à vista.',
     date: '12 Abr 2026',
@@ -199,7 +199,7 @@ Exemplo:
 Disallow: /admin/
 Disallow: /private/
 
-Curiosamente, alguns sites acabam por revelar diretórios secretos sem querer.
+Curiosamente, alguns sites acabam por revelar diretorias secretos sem querer.
 
 Claro que isso não significa que possas entrar.
 Mas mostra como pequenos detalhes podem revelar muita informação.
@@ -288,7 +288,7 @@ export default function BlogTab() {
             </p>
 
             <h1 className="text-3xl font-bold text-gray-900">
-              Guia dos Diretórios Web
+              Guia das Diretorias Web
             </h1>
 
             <p className="text-sm text-gray-400 mt-1">
@@ -302,7 +302,7 @@ export default function BlogTab() {
           </p>
 
           <p>
-            Essas pastas chamam-se <strong>diretórios</strong>.
+            Essas pastas chamam-se <strong>diretorias</strong>.
           </p>
 
           <p>
@@ -323,7 +323,7 @@ export default function BlogTab() {
           </p>
 
           <h2 className="text-xl font-bold text-gray-900">
-            Diretórios num site
+            Diretorias num site
           </h2>
 
           <pre className="bg-gray-900 text-green-400 border border-gray-200 rounded-xl p-4 font-mono text-sm overflow-x-auto">
@@ -332,13 +332,12 @@ export default function BlogTab() {
 ├── blog/
 ├── imagens/
 ├── jogos/
-├── admin/
-└── mentores/`}
+└── admin/`}
           </pre>
 
           <p>
             Cada diretório pode conter mais páginas, imagens, jogos ou
-            ficheiros especiais.
+            ficheiros especiais. Secalhar este blog tem texto escondido onde estão escritas diretorias secretas.
           </p>
 
           <p>
@@ -377,7 +376,7 @@ export default function BlogTab() {
           </div>
 
           <p>
-            Nem todos os diretórios aparecem nos menus do site.
+            Nem todos as diretorias aparecem nos menus do site.
           </p>
 
           <p>
@@ -416,7 +415,7 @@ export default function BlogTab() {
               </p>
 
               <p className="text-sm text-blue-800 mt-2">
-                Curiosamente, às vezes revela diretórios interessantes.
+                Curiosamente, às vezes revela diretorias interessantes.
               </p>
             </div>
           )}
@@ -426,7 +425,7 @@ export default function BlogTab() {
           </h2>
 
           <p>
-            Os programadores usam diretórios para organizar melhor os
+            Os programadores usam diretorias para organizar melhor os
             sites:
           </p>
 
@@ -445,11 +444,13 @@ export default function BlogTab() {
           <div className="pt-10 space-y-4">
             <p className="text-white select-all cursor-text leading-8">
               O diretório mais interessante nem sempre aparece no menu.
-              Alguns caminhos só podem ser encontrados por quem observa com atenção. (mentores,
+              Alguns caminhos só podem ser encontrados por quem observa com atenção. (
               
               six-seven,
               
               dojo,
+
+              mentores,
 
               programar
 
@@ -458,7 +459,7 @@ export default function BlogTab() {
               
             </p>
 
-            <p className="text-[12px] text-gray-300">
+            <p className="text-[12px] text-gray-400">
               Há texto escondido aqui.
             </p>
           </div>

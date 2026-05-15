@@ -21,7 +21,7 @@ const QUESTIONS_PYTHON = [
   { q: 'O que é "Phishing" em cibersegurança?', options: ['Uma técnica de pesca no Minecraft', 'Uma tentativa de enganar utilizadores para roubar dados', 'Um erro no código Python', 'Um tipo de firewall'], correct: 1 },
   { q: 'Qual destas funções é usada para mostrar texto no ecrã em Python?', options: ['echo()', 'console.log()', 'print()', 'display()'], correct: 2 },
   { q: 'O que é um endereço IP?', options: ['A password do router wifi', 'A identificação de um dispositivo numa rede', 'Um protocolo de impressão', 'Um tipo de variável'], correct: 1 },
-  { q: 'Como inicias um comentário de uma única linha em Python?', options: ['// comentário', '/* comentário */', '', '# comentário'], correct: 3 },
+  { q: 'Como inicias um comentário de uma única linha em Python?', options: ['// comentário', '/* comentário */', '% comentário', '# comentário'], correct: 3 },
   { q: 'O que é a Autenticação de Dois Fatores (2FA)?', options: ['Fazer login em dois computadores ao mesmo tempo', 'Usar duas passwords diferentes seguidas', 'Uma verificação extra além da password (ex: código por SMS)', 'Um tipo de ataque hacker'], correct: 2 },
   { q: 'Qual das seguintes opções NÃO é um tipo de dados válido em Python?', options: ['int', 'float', 'char', 'bool'], correct: 2 },
   { q: 'O que faz uma "Firewall"?', options: ['Aquece o computador nos dias frios', 'Controla e filtra o tráfego de rede (entrada e saída)', 'Apaga ficheiros antigos automaticamente', 'Cria cópias de segurança do código'], correct: 1 },
