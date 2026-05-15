@@ -106,7 +106,7 @@ export default function SecretMentorsPage() {
       <section className="group flex justify-center">
         <div className="relative rounded-2xl overflow-hidden shadow-md border border-gray-200 bg-white">
           <Image
-            src="/images/FotoSecretaFinal.jpg"
+            src="/images/CoderCamp.jpg"
             alt="Coder Camp 2026"
             width={600} 
             height={600}
@@ -114,8 +114,8 @@ export default function SecretMentorsPage() {
             priority
           />
           <a
-            href="/api/download/image?file=FotoSecretaFinal.jpg"
-            download="FotoSecretaFinal.jpg"
+            href="/api/download/image?file=CoderCamp.jpg"
+            download="CoderCamp.jpg"
             className="absolute inset-0 bg-black/0 group-hover:bg-black/50 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
           >
             <div className="flex flex-col items-center gap-2">
