@@ -110,6 +110,11 @@ function MentorCard({ m, onSuspectClick }: { m: typeof MENTORS[0]; onSuspectClic
 export default function SecretMentorsPage() {
   const game = useGame();
 
+  const PYTHON_HINT = "Uma imagem contêm muito mais do que se vê à primeira vista.";
+  const SCRATCH_HINT = "As imagens têm segredos a revelar talvez seja necessário olhar para os seus metadados...";
+
+  const currentHint = game.path === 'python' ? PYTHON_HINT : SCRATCH_HINT;
+
   // Estados do Modal
   const [showModal, setShowModal] = useState(false);
   const [modalTab, setModalTab] = useState<'geral' | 'detalhes'>('geral');
@@ -126,7 +131,7 @@ export default function SecretMentorsPage() {
   return (
     <div className="p-8 max-w-4xl mx-auto space-y-8">
       <header className="border-b border-gray-200 pb-4">
-        <p className="text-xs font-mono text-purple-600 mb-1">dojo.local/mentores - Uma imagem contêm muito mais do que se vê à primeira vista. </p>
+        <p className="text-xs font-mono text-purple-600 mb-1">dojo.local/mentores - {currentHint}</p>
         <h1 className="text-2xl font-bold text-gray-900">Equipa de Mentores</h1>
         <p className="text-gray-500 text-sm mt-1">Os guardiões do Coder Camp de 2026</p>
       </header>
