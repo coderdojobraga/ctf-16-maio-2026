@@ -154,23 +154,23 @@ export default function SecretMentorsPage() {
 
         {/* Event Image */}
         <section className="group flex justify-center">
-          <div className="relative rounded-2xl overflow-hidden shadow-md border border-gray-200 bg-white">
+          <div className="relative rounded-lg overflow-hidden border border-gray-100 bg-white">
             <Image
               src="/images/CoderCamp.jpg"
               alt="Coder Camp 2026"
-              width={600} 
-              height={600}
-              className="object-contain p-4"
+              width={400} 
+              height={400}
+              className="object-contain p-6"
               priority
             />
             <a
               href="/api/download/image?file=CoderCamp.jpg"
               download="CoderCamp.jpg"
-              className="absolute inset-0 bg-black/0 group-hover:bg-black/50 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
+              className="absolute inset-0 bg-black/0 group-hover:bg-black/30 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
             >
               <div className="flex flex-col items-center gap-2">
-                <Download className="w-8 h-8 text-white" />
-                <span className="text-white font-semibold text-sm">Fazer Download</span>
+                <Download className="w-5 h-5 text-white" />
+                <span className="text-white font-semibold text-xs">Download</span>
               </div>
             </a>
           </div>
