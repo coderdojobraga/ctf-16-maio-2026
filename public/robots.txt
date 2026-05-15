@@ -6,4 +6,3 @@ Disallow: /admin/
 Disallow: /dashboard/
 Disallow: /mentores
 
-# Curioso? Bom sinal. É assim que começa um bom hacker ético.
