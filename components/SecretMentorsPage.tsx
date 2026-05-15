@@ -78,13 +78,47 @@ const MENTORS = [
   { name: 'Rita Camacho',      role: 'Mentor',            image: '/images/RitaCamacho.png', suspicious: false },
 ];
 
+function MentorCard({ m, onSuspectClick }: { m: typeof MENTORS[0]; onSuspectClick: () => void }) {
+  const fileName = m.image.split('/').pop();
+  return (
+    <div className="flex flex-col items-center text-center">
+      <div className="group relative">
+        <Image
+          src={m.image}
+          alt={m.name}
+          width={150}
+          height={150}
+          className="object-cover rounded-full w-36 h-36 border border-gray-300"
+        />
+        <a
+          href={`/api/download/image?file=${fileName}`}
+          download={fileName}
+          className="absolute inset-0 bg-black/0 group-hover:bg-black/50 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 rounded-full"
+        >
+          <div className="flex flex-col items-center gap-2">
+            <Download className="w-6 h-6 text-white" />
+            <span className="text-white font-semibold text-xs">Download</span>
+          </div>
+        </a>
+      </div>
+      <h3 className="text-sm font-semibold mt-2">{m.name}</h3>
+      <p className="text-xs text-gray-500">{m.role}</p>
+    </div>
+  );
+}
+
 export default function SecretMentorsPage() {
   const game = useGame();
-  
+
+  const PYTHON_HINT = "Uma imagem contêm muito mais do que se vê à primeira vista.";
+  const SCRATCH_HINT = "As imagens têm segredos a revelar talvez seja necessário olhar para os seus metadados...";
+
+  const currentHint = game.path === 'python' ? PYTHON_HINT : SCRATCH_HINT;
+
   // Estados do Modal
   const [showModal, setShowModal] = useState(false);
   const [modalTab, setModalTab] = useState<'geral' | 'detalhes'>('geral');
-  
+
   // Estados do Email
   const [emailInput, setEmailInput] = useState(game.credentials?.email ?? '');
   const [emailSent, setEmailSent] = useState(false);
@@ -97,34 +131,10 @@ export default function SecretMentorsPage() {
   return (
     <div className="p-8 max-w-4xl mx-auto space-y-8">
       <header className="border-b border-gray-200 pb-4">
-        <p className="text-xs font-mono text-purple-600 mb-1">dojo.local/mentores</p>
+        <p className="text-xs font-mono text-purple-600 mb-1">dojo.local/mentores - {currentHint}</p>
         <h1 className="text-2xl font-bold text-gray-900">Equipa de Mentores</h1>
         <p className="text-gray-500 text-sm mt-1">Os guardiões do Coder Camp de 2026</p>
       </header>
-
-      {/* Event Image */}
-      <section className="group flex justify-center">
-        <div className="relative rounded-2xl overflow-hidden shadow-md border border-gray-200 bg-white">
-          <Image
-            src="/images/FotoSecretaFinal.jpg"
-            alt="Coder Camp 2026"
-            width={600} 
-            height={600}
-            className="object-contain p-4"
-            priority
-          />
-          <a
-            href="/api/download/image?file=FotoSecretaFinal.jpg"
-            download="FotoSecretaFinal.jpg"
-            className="absolute inset-0 bg-black/0 group-hover:bg-black/50 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
-          >
-            <div className="flex flex-col items-center gap-2">
-              <Download className="w-8 h-8 text-white" />
-              <span className="text-white font-semibold text-sm">Fazer Download</span>
-            </div>
-          </a>
-        </div>
-      </section>
 
       <div className="space-y-8">
         {/* Mentores Pedagógicos */}
@@ -144,6 +154,30 @@ export default function SecretMentorsPage() {
             {MENTORS.filter(m => m.role === 'Mentor Lúdico').map(m => (
               <MentorCard key={m.name} m={m} onSuspectClick={() => setShowModal(true)} />
             ))}
+          </div>
+        </section>
+
+        {/* Event Image */}
+        <section className="group flex justify-center">
+          <div className="relative rounded-lg overflow-hidden border border-gray-100 bg-white">
+            <Image
+              src="/images/CoderCamp.jpg"
+              alt="Coder Camp 2026"
+              width={400} 
+              height={400}
+              className="object-contain p-6"
+              priority
+            />
+            <a
+              href="/api/download/image?file=CoderCamp.jpg"
+              download="CoderCamp.jpg"
+              className="absolute inset-0 bg-black/0 group-hover:bg-black/30 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
+            >
+              <div className="flex flex-col items-center gap-2">
+                <Download className="w-5 h-5 text-white" />
+                <span className="text-white font-semibold text-xs">Download</span>
+              </div>
+            </a>
           </div>
         </section>
 
@@ -167,7 +201,6 @@ export default function SecretMentorsPage() {
         <p className="text-gray-500 text-sm">
           Clica neste botão para enviarmos um email de confirmação para entrares como mentor ou champion.
         </p>
-        
         {emailSent ? (
           <div className="flex items-center gap-2 text-green-600">
             <CheckCircle2 className="w-5 h-5" />
@@ -229,7 +262,7 @@ export default function SecretMentorsPage() {
               className="p-5 bg-purple-50 rounded-xl text-sm text-purple-900 space-y-2 border border-purple-200 shadow-inner text-center font-medium"
             >
               <p>Tantas imagens... será que alguma tem informação escondida nas suas propriedades?</p>
-              <p className="text-xs text-purple-600 mt-2 italic">// Dica: Passa o rato pela foto suspeita e vê os metadados.</p>
+              <p className="text-xs text-purple-600 mt-2 italic">// Dica: Passa o rato pela foto suspeita, faz download e descobre como se vêem os metadados.</p>
             </motion.div>
           )}
         </AnimatePresence>
@@ -296,42 +329,5 @@ function Row({ label, value, highlight }: { label: string; value: string; highli
       <span className="text-gray-400 w-24 shrink-0">{label}:</span>
       <span className={highlight ? 'text-purple-700 font-mono font-bold' : 'text-gray-700'}>{value}</span>
     </div>
-  );
-}
-
-function MentorCard({ m, onSuspectClick }: { m: any, onSuspectClick: () => void }) {
-  return (
-    <motion.div whileHover={{ scale: 1.02 }}
-      className={`bg-white border rounded-2xl p-5 text-center shadow-sm ${
-        m.suspicious ? 'border-yellow-300' : 'border-gray-200'
-      }`}
-    >
-      <div className="mb-3 flex justify-center group">
-        <div className="w-24 h-24 relative rounded-lg overflow-hidden">
-          <Image src={m.image} alt={m.name} fill className="object-cover" />
-          <a href={m.image} download={`${m.name}.jpg`}
-            className="absolute inset-0 bg-black/0 group-hover:bg-black/40 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
-          >
-            <Download className="w-5 h-5 text-white" />
-          </a>
-        </div>
-      </div>
-      <p className="text-gray-900 font-semibold text-sm">{m.name}</p>
-      <p className="text-gray-400 text-xs mt-0.5">{m.role}</p>
-      {m.suspicious && (
-        <div className="mt-3 space-y-1">
-          <span className="text-xs bg-yellow-50 text-yellow-700 border border-yellow-200 rounded-full px-2 py-0.5">
-            Foto suspeita
-          </span>
-          <div className="relative group mt-2">
-            <button onClick={onSuspectClick}
-              className="flex items-center gap-1.5 mx-auto text-xs text-purple-600 hover:text-purple-800 transition-colors"
-            >
-              <Download className="w-3 h-3" /> Ver Metadados
-            </button>
-          </div>
-        </div>
-      )}
-    </motion.div>
   );
 }

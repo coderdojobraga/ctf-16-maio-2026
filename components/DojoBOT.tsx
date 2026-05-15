@@ -274,7 +274,7 @@ export default function DojoBOT({ dark = false }: { dark?: boolean }) {
 
       {/* Override */}
       <div className={`border-t pt-4 ${d ? 'border-red-900' : 'border-gray-200'}`}>
-        <p className={`text-xs mb-2 ${d ? 'text-red-700' : 'text-gray-400'}`}>Conseguiste o código de override? Introduz abaixo:</p>
+        <p className={`text-xs mb-2 ${d ? 'text-red-700' : 'text-gray-400'}`}>Conseguiste o código para eliminar os teus dados do sistema? Introduz abaixo:</p>
         <form onSubmit={checkOverride} className="flex gap-2">
           <input
             className={`flex-1 border rounded-xl px-4 py-2 font-mono text-sm focus:outline-none ${
