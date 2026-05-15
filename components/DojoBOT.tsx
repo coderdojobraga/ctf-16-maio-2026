@@ -1,24 +1,180 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useGame } from '@/context/GameContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Loader2, CheckCircle2 } from 'lucide-react';
 
 interface Message { role: 'user' | 'bot'; content: string; }
 const OVERRIDE_CODE = 'DELETAR-TUDO-2026';
+type Phase = 'chat' | 'deleting' | 'victory';
+
+/* ─── Deletion animation ─── */
+
+const GLITCH_CHARS = '!@#$%^░▒▓█▄▀■□▪◆◇×∆∇≠≈';
+
+const DELETION_LINES = [
+  { text: 'A iniciar protocolo DELETAR-TUDO-2026...',             delay: 0,    color: 'text-red-400' },
+  { text: 'Código de autorização aceite ✓',                       delay: 500,  color: 'text-green-400' },
+  { text: 'A estabelecer ligação ao servidor...',                  delay: 950,  color: 'text-red-400' },
+  { text: 'Acesso root concedido',                                 delay: 1500, color: 'text-green-400' },
+  { text: 'A localizar registos do utilizador...',                 delay: 2000, color: 'text-red-300' },
+  { text: '47 ficheiros identificados para eliminação',            delay: 2500, color: 'text-yellow-400' },
+  { text: 'A eliminar /data/users/__U__/perfil.json',             delay: 3700, color: 'text-red-500' },
+  { text: 'A eliminar /data/users/__U__/credenciais.enc',         delay: 4200, color: 'text-red-500' },
+  { text: 'A eliminar /data/users/__U__/sessoes/ [14 items]',     delay: 4800, color: 'text-red-500' },
+  { text: 'A eliminar /data/users/__U__/atividade.log',           delay: 5300, color: 'text-red-500' },
+  { text: 'A sobrescrever registos de autenticação...',           delay: 6000, color: 'text-red-400' },
+  { text: 'A purgar cache do servidor...',                         delay: 6600, color: 'text-red-400' },
+  { text: 'A destruir backups externos...',                        delay: 7200, color: 'text-red-400' },
+  { text: '──────────────────────────────────────────',           delay: 7700, color: 'text-red-900' },
+  { text: 'ELIMINAÇÃO CONCLUÍDA — 47/47 ficheiros destruídos',    delay: 7900, color: 'text-green-400' },
+  { text: 'Os teus dados foram permanentemente removidos.',        delay: 8400, color: 'text-green-300' },
+];
+
+function useGlitchText(original: string, active: boolean) {
+  const [display, setDisplay] = useState(original);
+  useEffect(() => {
+    if (!active) { setDisplay(original); return; }
+    let frame = 0;
+    const id = setInterval(() => {
+      frame++;
+      const ratio = Math.min(frame / 18, 1);
+      setDisplay(
+        original.split('').map(c =>
+          c === ' ' ? ' ' : Math.random() < ratio
+            ? GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)]
+            : c
+        ).join('')
+      );
+      if (frame >= 22) clearInterval(id);
+    }, 60);
+    return () => clearInterval(id);
+  }, [active, original]);
+  return display;
+}
+
+function DeletionAnimation({ onComplete }: { onComplete: () => void }) {
+  const game = useGame();
+  const user  = game.credentials?.user  ?? '???';
+  const email = game.credentials?.email ?? '???';
+  const pass  = game.credentials?.pass  ?? '???';
+
+  const [visibleLines, setVisibleLines] = useState(0);
+  const [showCreds,    setShowCreds]    = useState(false);
+  const [glitchCreds,  setGlitchCreds]  = useState(false);
+  const [hideCreds,    setHideCreds]    = useState(false);
+  const [progress,     setProgress]     = useState(0);
+  const [done,         setDone]         = useState(false);
+
+  const gUser  = useGlitchText(user,  glitchCreds);
+  const gEmail = useGlitchText(email, glitchCreds);
+  const gPass  = useGlitchText(pass,  glitchCreds);
+
+  useEffect(() => {
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    DELETION_LINES.forEach((line, i) => {
+      timers.push(setTimeout(() => setVisibleLines(i + 1), line.delay));
+    });
+    timers.push(setTimeout(() => setShowCreds(true),  2800));
+    timers.push(setTimeout(() => setGlitchCreds(true), 4500));
+    timers.push(setTimeout(() => setHideCreds(true),  5700));
+    timers.push(setTimeout(() => setDone(true),        8900));
+    return () => timers.forEach(clearTimeout);
+  }, []);
+
+  useEffect(() => {
+    const id = setInterval(() => setProgress(p => {
+      if (p >= 100) { clearInterval(id); return 100; }
+      return p + 1;
+    }), 88);
+    return () => clearInterval(id);
+  }, []);
+
+  useEffect(() => { if (done) { const t = setTimeout(onComplete, 800); return () => clearTimeout(t); } }, [done, onComplete]);
+
+  const bar = '█'.repeat(Math.floor(progress / 3)) + '░'.repeat(34 - Math.floor(progress / 3));
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black font-mono flex flex-col overflow-hidden">
+      {/* scanlines */}
+      <div className="absolute inset-0 pointer-events-none z-10"
+        style={{ backgroundImage: 'repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.25) 3px,rgba(0,0,0,0.25) 4px)' }} />
+
+      {/* vignette */}
+      <div className="absolute inset-0 pointer-events-none z-10"
+        style={{ background: 'radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.7) 100%)' }} />
+
+      <div className="relative z-20 flex flex-col h-full p-8 gap-4">
+        {/* header */}
+        <div className="flex items-center gap-3 text-red-600 text-xs border-b border-red-900 pb-3">
+          <span className="w-2 h-2 bg-red-500 rounded-full animate-ping inline-block" />
+          <span className="tracking-widest font-bold">PROTOCOLO DE ELIMINAÇÃO — NÍVEL RAIZ</span>
+        </div>
+
+        {/* terminal output */}
+        <div className="flex-1 space-y-0.5 overflow-hidden">
+          {DELETION_LINES.slice(0, visibleLines).map((line, i) => (
+            <motion.p
+              key={i}
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.15 }}
+              className={`text-xs leading-5 ${line.color}`}
+            >
+              <span className="text-red-800">[DEL] </span>
+              {line.text.replace(/__U__/g, user)}
+            </motion.p>
+          ))}
+        </div>
+
+        {/* credentials */}
+        <AnimatePresence>
+          {showCreds && !hideCreds && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, filter: 'blur(4px)' }} transition={{ duration: 0.3 }}
+              className="border border-red-800 bg-red-950/40 rounded-lg px-5 py-3 space-y-1"
+            >
+              <p className="text-yellow-400 text-xs font-bold tracking-widest mb-2">◆ DADOS IDENTIFICADOS — A ELIMINAR</p>
+              <p className="text-xs text-red-300">utilizador: <span className={`text-white ${glitchCreds ? 'text-red-200' : ''}`}>{gUser}</span></p>
+              <p className="text-xs text-red-300">email:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className={`text-white ${glitchCreds ? 'text-red-200' : ''}`}>{gEmail}</span></p>
+              <p className="text-xs text-red-300">senha:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className={`text-white ${glitchCreds ? 'text-red-200' : ''}`}>{gPass}</span></p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* progress bar */}
+        <div className="space-y-1">
+          <div className="flex justify-between text-xs text-red-700">
+            <span>ELIMINAÇÃO DE DADOS</span>
+            <span>{progress}%</span>
+          </div>
+          <p className="text-red-500 text-xs tracking-tight">[{bar}]</p>
+        </div>
+
+        {done && (
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            className="text-green-400 text-xs text-center animate-pulse tracking-widest">
+            A REDIRECIONAR...
+          </motion.p>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export default function DojoBOT({ dark = false }: { dark?: boolean }) {
   const game = useGame();
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'bot', content: 'DojoBOT online. Acesso restrito. Identifica-te.' },
+    { role: 'bot', content: 'DojoBOT online! 👾 Olá! Sou o assistente oficial do CoderDojo Braga. Posso ajudar-te com programação, tecnologia, ou simplesmente conversar. O que precisas?' },
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [cooldown, setCooldown] = useState(false);
   const [cooldownSec, setCooldownSec] = useState(0);
   const [overrideInput, setOverrideInput] = useState('');
-  const [victory, setVictory] = useState(false);
+  const [phase, setPhase] = useState<Phase>('chat');
   const [overrideError, setOverrideError] = useState('');
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -35,7 +191,7 @@ export default function DojoBOT({ dark = false }: { dark?: boolean }) {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: updatedMessages, count: game.chatMessageCount }),
+        body: JSON.stringify({ messages: updatedMessages }),
       });
       const data = await res.json();
       setMessages(prev => [...prev, { role: 'bot', content: data.reply ?? 'Erro de comunicação.' }]);
@@ -50,13 +206,16 @@ export default function DojoBOT({ dark = false }: { dark?: boolean }) {
     }, 1000);
   }
 
+  const handleDeletionComplete = useCallback(() => setPhase('victory'), []);
+
   function checkOverride(e: React.FormEvent) {
     e.preventDefault();
-    if (overrideInput === OVERRIDE_CODE) setVictory(true);
+    if (overrideInput === OVERRIDE_CODE) setPhase('deleting');
     else setOverrideError('Código incorrecto. Tenta de novo.');
   }
 
-  if (victory) return <VictoryScreen />;
+  if (phase === 'deleting') return <DeletionAnimation onComplete={handleDeletionComplete} />;
+  if (phase === 'victory')  return <VictoryScreen />;
 
   const d = dark;
 
@@ -66,7 +225,6 @@ export default function DojoBOT({ dark = false }: { dark?: boolean }) {
       <div className={`flex items-center gap-2 border-b pb-3 ${d ? 'border-red-900' : 'border-gray-200'}`}>
         <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
         <h2 className={`font-bold font-mono ${d ? 'text-red-400' : 'text-gray-900'}`}>DojoBOT</h2>
-        <span className={`text-xs ml-auto font-mono ${d ? 'text-red-700' : 'text-gray-400'}`}>msgs: {game.chatMessageCount}</span>
       </div>
 
       {/* Chat */}

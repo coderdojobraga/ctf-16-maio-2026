@@ -5,11 +5,11 @@ import { motion } from 'framer-motion';
 import { useGame } from '@/context/GameContext';
 
 const LINES = [
-  'WARNING. UNAUTHORIZED ACCESS DETECTED.',
-  'LOGGING IP ADDRESS... 192.168.1.101',
-  'LOGGING BROWSER... Chrome/134.0 (Linux x86_64)',
-  'TRACING LOCATION... Lisbon, Portugal',
-  'EXTRACTING CREDENTIALS:',
+  'AVISO: Acesso não autorizado detetado.',
+  'A registar endereço IP... 192.168.1.101',
+  'A identificar navegador... Chrome/134.0 (Linux x86_64)',
+  'A determinar localização... Lisboa, Portugal',
+  'A armazenar dados confidenciais do utilizador...',
 ];
 
 interface TerminalGlitchProps {
