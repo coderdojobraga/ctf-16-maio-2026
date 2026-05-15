@@ -262,7 +262,7 @@ export default function SecretMentorsPage() {
               className="p-5 bg-purple-50 rounded-xl text-sm text-purple-900 space-y-2 border border-purple-200 shadow-inner text-center font-medium"
             >
               <p>Tantas imagens... será que alguma tem informação escondida nas suas propriedades?</p>
-              <p className="text-xs text-purple-600 mt-2 italic">// Dica: Passa o rato pela foto suspeita e vê os metadados.</p>
+              <p className="text-xs text-purple-600 mt-2 italic">// Dica: Passa o rato pela foto suspeita, faz download e descobre como se vêem os metadados.</p>
             </motion.div>
           )}
         </AnimatePresence>

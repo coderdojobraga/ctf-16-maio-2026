@@ -167,7 +167,7 @@ export default function ChampionPanel() {
                       transition={{ duration: 0.3 }}
                       className="p-4 bg-purple-50 rounded-xl text-xs font-mono text-purple-900 space-y-2 border border-purple-200 shadow-inner"
                     >
-                      <p>mentor = <span className="text-blue-600">{MENTOR_COOKIE}</span></p>
+                      <p>Se mentor = <span className="text-blue-600">{MENTOR_COOKIE}</span>  ... então</p>
                       <p>champion = <span className="text-purple-600">???</span></p>
                       <div className="mt-2 pt-2 border-t border-purple-200/50">
                         <p className="text-[10px] text-purple-600 italic">// Dica: O valor original está codificado.</p>
