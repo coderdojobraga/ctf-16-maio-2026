@@ -7,6 +7,8 @@ import { Lock, Unlock, Trophy, RefreshCw, EyeOff } from 'lucide-react';
 
 const SCRATCH_PASSWORD = 'NINJA-HACKER';
 const CHAMPION_COOKIE = 'Y2hhbXBpb24';
+const CHAMPION_COOKIE_2 = 'Y2hhbXBpb24=';
+
 const MENTOR_COOKIE = 'bWVudG9y';
 
 export default function ChampionPanel() {
@@ -66,7 +68,7 @@ export default function ChampionPanel() {
       }
     }
 
-    if (roleValue === CHAMPION_COOKIE) {
+    if (roleValue === CHAMPION_COOKIE || roleValue === CHAMPION_COOKIE_2) {
       game.setLevel(6);
       game.unlockTab('dojobot');
     } else {
